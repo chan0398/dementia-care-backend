@@ -22,8 +22,6 @@ const db = mysql.createPool({
   timeout: 60000
 });
 
-const path = require('path'); 
-
 // 미들웨어 설정
 app.use(cors());
 app.use(express.json());
