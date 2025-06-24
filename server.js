@@ -161,3 +161,142 @@ app.listen(PORT, () => {
     console.log('✅ 모든 데이터베이스 환경변수가 설정되었습니다.');
   }
 });
+
+// 기존 코드 뒤에 추가
+
+// 데이터베이스 초기화 API (테이블 생성)
+app.post('/api/init-database', (req, res) => {
+  const promiseDb = db.promise();
+  
+  // 테이블 생성 SQL들
+  const createTables = [
+    // users 테이블
+    `CREATE TABLE IF NOT EXISTS users (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      name VARCHAR(100) NOT NULL,
+      phone VARCHAR(20) NOT NULL,
+      address TEXT,
+      user_type ENUM('patient', 'caregiver') DEFAULT 'caregiver',
+      status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )`,
+    
+    // products 테이블  
+    `CREATE TABLE IF NOT EXISTS products (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      category VARCHAR(100) NOT NULL,
+      max_quantity_per_month INT DEFAULT 1,
+      image_url VARCHAR(500),
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+    
+    // applications 테이블
+    `CREATE TABLE IF NOT EXISTS applications (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      user_id INT NOT NULL,
+      product_id INT NOT NULL,
+      quantity INT NOT NULL,
+      status ENUM('pending', 'approved', 'rejected', 'shipped', 'delivered') DEFAULT 'pending',
+      delivery_address TEXT NOT NULL,
+      request_note TEXT,
+      admin_note TEXT,
+      tracking_number VARCHAR(100),
+      applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      approved_at TIMESTAMP NULL,
+      shipped_at TIMESTAMP NULL,
+      delivered_at TIMESTAMP NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (product_id) REFERENCES products(id)
+    )`
+  ];
+  
+  // 순차적으로 테이블 생성
+  Promise.all(createTables.map(sql => promiseDb.query(sql)))
+    .then(() => {
+      res.json({
+        success: true,
+        message: '✅ 데이터베이스 테이블이 성공적으로 생성되었습니다!',
+        tables: ['users', 'products', 'applications'],
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 테이블 생성 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: '테이블 생성 실패',
+        details: err.message,
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 샘플 데이터 삽입 API
+app.post('/api/insert-sample-data', (req, res) => {
+  const promiseDb = db.promise();
+  
+  const sampleProducts = [
+    ['성인용 기저귀', '대형 사이즈 기저귀 (20매)', '위생용품', 2, 'https://example.com/diaper.jpg'],
+    ['방수 매트', '침대용 방수 매트 (10매)', '위생용품', 1, 'https://example.com/mat.jpg'],
+    ['목욕용품 세트', '샴푸, 바디워시 포함', '위생용품', 1, 'https://example.com/bath.jpg'],
+    ['일회용 장갑', '니트릴 장갑 (100매)', '안전용품', 1, 'https://example.com/gloves.jpg'],
+    ['항균 손소독제', '500ml 대용량', '위생용품', 2, 'https://example.com/sanitizer.jpg']
+  ];
+  
+  const insertProductSQL = `
+    INSERT INTO products (name, description, category, max_quantity_per_month, image_url)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  
+  Promise.all(sampleProducts.map(product => 
+    promiseDb.query(insertProductSQL, product)
+  ))
+    .then(() => {
+      res.json({
+        success: true,
+        message: '✅ 샘플 조호물품 데이터가 삽입되었습니다!',
+        inserted_products: sampleProducts.length,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 샘플 데이터 삽입 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: '샘플 데이터 삽입 실패',
+        details: err.message,
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 조호물품 목록 조회 API
+app.get('/api/products', (req, res) => {
+  const promiseDb = db.promise();
+  
+  promiseDb.query('SELECT * FROM products WHERE is_active = TRUE ORDER BY created_at DESC')
+    .then(([results]) => {
+      res.json({
+        success: true,
+        message: '조호물품 목록 조회 성공',
+        data: results,
+        total_count: results.length,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 상품 조회 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: '상품 조회 실패',
+        details: err.message,
+        timestamp: new Date().toISOString()
+      });
+    });
+});
