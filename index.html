@@ -631,6 +631,74 @@ function logout() {
         location.reload(); // 페이지 새로고침
     }
 }
+<script src="js/api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 사용자 정보 로드
+    loadUserFromStorage();
+    
+    // 헤더 업데이트
+    updateMainPageHeader();
+    
+    // 인기 조호물품 로드 - 이 부분 주석 처리
+    // loadPopularProducts();
+    
+    // 메인 페이지 헤더 업데이트
+    function updateMainPageHeader() {
+        const utilityMenu = document.querySelector('.utility-menu');
+        if (utilityMenu) {
+            if (currentUser) {
+                utilityMenu.innerHTML = `
+                    <span style="color: #007bff; font-weight: bold;">
+                        안녕하세요, ${currentUser.name}님! 👋
+                    </span>
+                    <a href="pages/mypage.html">신청내역</a>
+                    <a href="pages/myinfo.html">내정보</a>
+                    <a href="#" onclick="logout()">로그아웃</a>
+                    <a href="pages/customer-service.html">고객센터</a>
+                `;
+            } else {
+                utilityMenu.innerHTML = `
+                    <a href="pages/login.html">로그인</a>
+                    <a href="pages/register.html">회원가입</a>
+                    <a href="pages/customer-service.html">고객센터</a>
+                `;
+            }
+        }
+        
+        // 히어로 섹션 버튼 업데이트
+        const heroButtons = document.querySelector('.hero-buttons');
+        if (heroButtons && currentUser) {
+            heroButtons.innerHTML = `
+                <a href="pages/mypage.html" class="btn-secondary">내 신청내역</a>
+                <a href="pages/application.html" class="btn-primary">조호물품 신청하기</a>
+            `;
+        }
+    }
+    
+    // loadPopularProducts 함수와 displayPopularProducts 함수 삭제
+    
+    // 신청하기 버튼 클릭 시 로그인 확인
+    const applyButtons = document.querySelectorAll('a[href*="application.html"]');
+    applyButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!currentUser) {
+                e.preventDefault();
+                if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+                    window.location.href = 'pages/login.html';
+                }
+            }
+        });
+    });
+});
+
+// 로그아웃 함수 전역 정의
+function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+        localStorage.removeItem('currentUser');
+        location.reload();
+    }
+}
 </script>
 </body>
 </html>
