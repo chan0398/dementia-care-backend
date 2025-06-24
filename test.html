@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데이터베이스 테스트</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; margin: 10px 0; }
+        .success { border-color: #28a745; background: #d4edda; }
+        .error { border-color: #dc3545; background: #f8d7da; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>🏥 치매안심센터 데이터베이스 테스트</h1>
+    
+    <div>
+        <h3>1단계: 테이블 생성</h3>
+        <button onclick="createTables()">데이터베이스 테이블 생성</button>
+        <div id="createResult" class="result" style="display:none;"></div>
+    </div>
+    
+    <div>
+        <h3>2단계: 샘플 데이터 삽입</h3>
+        <button onclick="insertSampleData()">샘플 조호물품 데이터 삽입</button>
+        <div id="insertResult" class="result" style="display:none;"></div>
+    </div>
+    
+    <div>
+        <h3>3단계: 데이터 조회</h3>
+        <button onclick="getProducts()">조호물품 목록 조회</button>
+        <div id="productsResult" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dementia-care-backend-production.up.railway.app';
+        
+        // 테이블 생성
+        async function createTables() {
+            try {
+                showLoading('createResult', '테이블 생성 중...');
+                
+                const response = await fetch(`${API_BASE}/api/init-database`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                showResult('createResult', result, response.ok);
+                
+            } catch (error) {
+                showResult('createResult', { error: error.message }, false);
+            }
+        }
+        
+        // 샘플 데이터 삽입
+        async function insertSampleData() {
+            try {
+                showLoading('insertResult', '샘플 데이터 삽입 중...');
+                
+                const response = await fetch(`${API_BASE}/api/insert-sample-data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                showResult('insertResult', result, response.ok);
+                
+            } catch (error) {
+                showResult('insertResult', { error: error.message }, false);
+            }
+        }
+        
+        // 조호물품 목록 조회
+        async function getProducts() {
+            try {
+                showLoading('productsResult', '조호물품 목록 조회 중...');
+                
+                const response = await fetch(`${API_BASE}/api/products`);
+                const result = await response.json();
+                showResult('productsResult', result, response.ok);
+                
+            } catch (error) {
+                showResult('productsResult', { error: error.message }, false);
+            }
+        }
+        
+        // 로딩 표시
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'result';
+            element.innerHTML = `<p>${message}</p>`;
+        }
+        
+        // 결과 표시
+        function showResult(elementId, result, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            element.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+        }
+    </script>
+</body>
+</html>
