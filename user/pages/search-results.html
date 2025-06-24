@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>검색 결과 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        .no-results {
+            display: none; /* 기본적으로 숨겨두기 */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 0;
+            text-align: center;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .no-results-message {
+            max-width: 400px;
+        }
+
+        .no-results-message img {
+            width: 100px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        .no-results-message p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .no-results-message p:first-of-type {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .related-keywords {
+            line-height: 1.8;
+        }
+        
+        .keyword {
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        /* 검색 결과 상품 컨테이너 스타일 */
+        .product-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        /* 검색 필터 스타일 */
+        .search-filters {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap; /* 추가: 텍스트가 줄바꿈되지 않도록 설정 */
+        }
+        
+        .filter-group label {
+            margin-bottom: 0; /* 추가: 레이블 아래 마진 제거 */
+            display: inline-block; /* 추가: 인라인 블록으로 설정 */
+        }
+
+        .filter-group select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            display: inline-block; /* 추가: 인라인 블록으로 설정 */
+            width: auto; /* 추가: 너비 자동으로 설정 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="search-results-section">
+                <div class="search-results-container">
+                    <div class="search-header">
+                        <h1>검색 결과</h1>
+                        <p>검색 결과 <span id="resultCount">0</span>건</p>
+                    </div>
+                    
+                    <!-- 검색 필터 - 카테고리만 남김 -->
+                    <div class="search-filters">
+                        <div class="filter-group">
+                            <label for="categoryFilter">카테고리:</label>
+                            <select id="categoryFilter">
+                                <option value="all">전체</option>
+                                <option value="hygiene">위생용품</option>
+                                <option value="daily">생활용품</option>
+                                <option value="meal">식사용품</option>
+                                <option value="safety">안전용품</option>
+                                <option value="rehab">재활용품</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 검색 결과 상품 목록 -->
+                    <div class="product-container"></div>
+
+                    <!-- 검색 결과 없음 메시지 -->
+                    <div class="no-results">
+                        <div class="no-results-message">
+                            <img src="../images/search-icon.png" alt="검색 아이콘" onerror="this.src='https://via.placeholder.com/100x100?text=검색'">
+                            <p>검색된 상품이 없습니다.</p>
+                            <p>다른 검색어를 입력해 주세요.</p>
+                        </div>
+                    </div>
+
+                    <div class="related-searches" style="margin-top: 30px;">
+                        <h3>추천 검색어</h3>
+                        <div class="related-keywords">
+                            <a href="#" class="keyword">성인용 기저귀</a>,
+                            <a href="#" class="keyword">물티슈</a>,
+                            <a href="#" class="keyword">방수 매트</a>,
+                            <a href="#" class="keyword">목욕의자</a>,
+                            <a href="#" class="keyword">식사 에이프런</a>,
+                            <a href="#" class="keyword">미끄럼방지매트</a>,
+                            <a href="#" class="keyword">보행보조기</a>,
+                            <a href="#" class="keyword">손잡이 식기</a>,
+                            <a href="#" class="keyword">요실금 패드</a>,
+                            <a href="#" class="keyword">욕창예방 매트리스</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 신청 모달 -->
+    <div id="applicationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>조호물품 신청</h2>
+            <div class="selected-product">
+                <img src="" alt="상품 이미지" id="modalProductImage" onerror="this.src='https://via.placeholder.com/100x100?text=상품'">
+                <div class="product-info">
+                    <h3 id="modalProductName"></h3>
+                    <p id="modalProductDesc"></p>
+                </div>
+            </div>
+            <form id="applicationForm">
+                <div class="form-group">
+                    <label for="patientName">환자명</label>
+                    <input type="text" id="patientName" name="patientName" required>
+                </div>
+                <div class="form-group">
+                    <label for="caregiverName">보호자명</label>
+                    <input type="text" id="caregiverName" name="caregiverName" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">연락처</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="010-0000-0000" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">배송주소</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="modalQuantity">수량</label>
+                    <select id="modalQuantity" name="modalQuantity">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="requestNote">요청사항</label>
+                    <textarea id="requestNote" name="requestNote" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">신청하기</button>
+                    <button type="button" class="btn-secondary modal-close">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/search-results.js"></script>
+</body>
+</html>

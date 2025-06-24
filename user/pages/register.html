@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 회원가입 폼 스타일 수정 */
+        .register-form {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        .register-form h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 500;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .required {
+            color: red;
+        }
+
+        /* 체크박스 스타일 - 수정된 부분 */
+        .checkbox-item {
+            display: flex;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .checkbox-item label {
+            font-size: 14px;
+        }
+
+        /* 버튼 스타일 - 색상 변경 */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background-color: #FF5722; /* 주황색으로 변경 */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #E64A19; /* 호버 시 어두운 주황색 */
+        }
+
+        .form-divider {
+            border-top: 1px solid #eee;
+            margin: 20px 0;
+        }
+        
+        /* 라디오 버튼 스타일 */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        
+        .radio-label {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-label input[type="radio"] {
+            margin-right: 5px;
+        }
+        
+        /* 환자 정보 섹션 */
+        .patient-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        /* 파일 업로드 영역 */
+        .file-upload {
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .file-upload-info {
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        /* 두 칸 레이아웃 */
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* 약관 동의 영역 - 완전히 수정된 부분 */
+        .agreements-section {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .agreement-list {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        /* 체크박스와 텍스트를 나란히 정렬하는 새로운 스타일 */
+        .agreement-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .agreement-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 (생략) -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="page-header">
+                <h1>회원가입</h1>
+                <p>치매안심센터 조호물품 신청 서비스를 이용하기 위한 회원가입 페이지입니다.</p>
+            </section>
+
+            <section class="register-section">
+                <div class="register-container">
+                    <form id="registerForm" class="register-form">
+                        <!-- 기본 정보 섹션 (생략) -->
+                        <h2>기본 정보 입력</h2>
+                        <div class="form-group">
+                            <label for="email">이메일</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">비밀번호</label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                            <p class="form-hint">* 10자 이상이면서 영문, 숫자, 특수문자를 모두 포함하세요</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="passwordConfirm">비밀번호 재확인</label>
+                            <input type="password" id="passwordConfirm" name="passwordConfirm" class="form-control" required>
+                            <p class="form-hint">* 비밀번호를 다시 입력해주세요</p>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">이름</label>
+                                <input type="text" id="name" name="name" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">연락처</label>
+                                <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="010-0000-0000" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">주소</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <input type="text" id="postcode" name="postcode" placeholder="우편번호" class="form-control" style="width: 30%;" readonly required>
+                                <button type="button" id="searchAddressBtn" class="btn-secondary">주소찾기</button>
+                            </div>
+                            <input type="text" id="address" name="address" placeholder="기본주소" class="form-control" style="margin-bottom: 10px;" readonly required>
+                            <input type="text" id="detailAddress" name="detailAddress" placeholder="상세주소" class="form-control" required>
+                        </div>
+                        
+                        <!-- 환자 정보 섹션 (생략) -->
+                        <h2>환자 정보 입력</h2>
+                        <div class="form-group">
+                            <label>환자와의 관계</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="relationship" value="self" checked> 본인
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="relationship" value="family"> 가족
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="relationship" value="caregiver"> 요양보호사
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="relationship" value="other"> 기타
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- 환자 정보 섹션 (생략) -->
+                        
+                        <!-- 증빙서류 제출 (생략) -->
+                        <h2>증빙서류 제출</h2>
+                        <div class="form-group">
+                            <p class="form-hint">* 조호물품 신청을 위해 다음 서류 중 하나 이상을 제출해주세요</p>
+                            <ul class="form-hint" style="margin-top: 5px; margin-bottom: 10px;">
+                                <li>치매 진단서 또는 소견서</li>
+                                <li>장기요양인정서</li>
+                                <li>환자 및 보호자의 신분증 사본</li>
+                                <li>가족관계증명서 (보호자가 가족인 경우)</li>
+                            </ul>
+                            
+                            <div class="file-upload">
+                                <input type="file" id="documentFile" name="documentFile" multiple accept=".jpg, .jpeg, .png, .pdf">
+                                <p class="file-upload-info">JPG, PNG, PDF 파일만 가능 (최대 5MB)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-divider"></div>
+                        
+                        <!-- 약관 동의 섹션 - 두 번째 이미지처럼 수정된 부분 -->
+                        <div class="agreements-section">
+                            <div class="agreement-item">
+                                <input type="checkbox" id="agreeAll" name="agreeAll">
+                                <label for="agreeAll">모두 동의합니다</label>
+                            </div>
+                            
+                            <div class="agreement-list">
+                                <div class="agreement-item">
+                                    <input type="checkbox" id="ageAgreement" name="ageAgreement" required>
+                                    <label for="ageAgreement">[필수] 만 14세 이상입니다</label>
+                                </div>
+                                
+                                <div class="agreement-item">
+                                    <input type="checkbox" id="termsAgreement" name="termsAgreement" required>
+                                    <label for="termsAgreement">[필수] 회원이용약관에 동의합니다</label>
+                                </div>
+                                
+                                <div class="agreement-item">
+                                    <input type="checkbox" id="privacyAgreement" name="privacyAgreement" required>
+                                    <label for="privacyAgreement">[필수] 개인정보 수집 및 이용에 동의합니다</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">가입하기</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+<!-- 기존 스크립트 교체 -->
+<script src="../js/main.js"></script>
+<script src="../js/api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 회원가입 폼 처리
+    const registerForm = document.getElementById('registerForm');
+    
+    if (registerForm) {
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            try {
+                showLoading(submitButton);
+                
+                // 폼 데이터 수집
+                const formData = new FormData(this);
+                const userData = {
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                    name: formData.get('name'),
+                    phone: formData.get('phone'),
+                    address: `${formData.get('postcode')} ${formData.get('address')} ${formData.get('addressDetail')}`.trim(),
+                    user_type: formData.get('relationship') === 'self' ? 'patient' : 'caregiver'
+                };
+                
+                // 비밀번호 확인
+                const confirmPassword = formData.get('confirmPassword');
+                if (userData.password !== confirmPassword) {
+                    throw new Error('비밀번호가 일치하지 않습니다.');
+                }
+                
+                // 필수 약관 동의 확인
+                const ageAgreement = formData.get('ageAgreement');
+                const termsAgreement = formData.get('termsAgreement');
+                const privacyAgreement = formData.get('privacyAgreement');
+                
+                if (!ageAgreement || !termsAgreement || !privacyAgreement) {
+                    throw new Error('필수 약관에 모두 동의해주세요.');
+                }
+                
+                // API 호출
+                const result = await registerUser(userData);
+                
+                if (result.success) {
+                    showSuccess(`${result.message}\n관리자 승인 후 로그인이 가능합니다.`);
+                    
+                    // 테스트를 위해 자동 승인 처리
+                    await apiCall('/api/admin/approve-user', 'POST', {
+                        user_id: result.user_id,
+                        action: 'approve'
+                    });
+                    
+                    // 로그인 페이지로 이동
+                    setTimeout(() => {
+                        window.location.href = 'login.html?registered=true';
+                    }, 2000);
+                } else {
+                    throw new Error(result.error || '회원가입에 실패했습니다.');
+                }
+                
+            } catch (error) {
+                console.error('회원가입 에러:', error);
+                showError(error.message);
+            } finally {
+                hideLoading(submitButton, originalText);
+            }
+        });
+    }
+    
+    // 환자와의 관계에 따른 환자 정보 섹션 표시
+    const relationshipRadios = document.querySelectorAll('input[name="relationship"]');
+    const patientInfoSection = document.getElementById('patientInfo');
+    
+    relationshipRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'self') {
+                patientInfoSection.style.display = 'none';
+            } else {
+                patientInfoSection.style.display = 'block';
+            }
+        });
+    });
+    
+    // 모든 약관에 동의 체크박스 이벤트
+    const agreeAllCheckbox = document.getElementById('agreeAll');
+    const agreementCheckboxes = document.querySelectorAll('input[id="ageAgreement"], input[id="termsAgreement"], input[id="privacyAgreement"]');
+    
+    agreeAllCheckbox.addEventListener('change', function() {
+        const isChecked = this.checked;
+        
+        agreementCheckboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+    });
+    
+    // 개별 약관 체크박스 변경 시 전체 동의 체크박스 상태 업데이트
+    agreementCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const allChecked = Array.from(agreementCheckboxes).every(cb => cb.checked);
+            agreeAllCheckbox.checked = allChecked;
+        });
+    });
+    
+    // 주소 찾기 버튼 (실제 구현 시 Daum 우편번호 API 사용)
+    const searchAddressBtn = document.getElementById('searchAddressBtn');
+    if (searchAddressBtn) {
+        searchAddressBtn.addEventListener('click', function() {
+            // 여기서는 간단히 샘플 데이터로 채우기
+            document.getElementById('postcode').value = '12345';
+            document.getElementById('address').value = '서울시 강남구 테헤란로 123';
+            document.getElementById('addressDetail').focus();
+            alert('실제 구현 시 Daum 우편번호 API를 연동하세요.');
+        });
+    }
+});
+</script>
+</body>
+</html>

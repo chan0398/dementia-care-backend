@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배송 조회 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 배송 조회 페이지 향상된 스타일 */
+        .tracking-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .delivery-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .delivery-info-item {
+            flex: 1;
+            min-width: 220px;
+        }
+        
+        .delivery-info-label {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 8px;
+        }
+        
+        .delivery-info-value {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .status-delivering {
+            color: #1565C0;
+        }
+        
+        .status-completed {
+            color: #2E7D32;
+        }
+        
+        /* 강화된 배송 진행 상태 */
+        .tracking-progress {
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .tracking-progress h3 {
+            font-size: 20px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .tracking-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .tracking-timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .tracking-timeline-progress {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 4px;
+            background-color: var(--primary-color);
+            z-index: 1;
+            transition: width 1s ease-in-out;
+        }
+        
+        .tracking-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .step-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.5s ease;
+            font-weight: bold;
+            color: #aaa;
+        }
+        
+        .step-circle.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+            animation: pulse-active 2s infinite;
+        }
+        
+        .step-circle.completed {
+            border-color: var(--success-color);
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        @keyframes pulse-active {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 87, 34, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
+            }
+        }
+        
+        .step-status {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        
+        .step-date {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+        
+        /* 향상된 상세 배송 정보 */
+        .tracking-details {
+            margin-top: 40px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+        }
+        
+        .tracking-details h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .tracking-detail-item {
+            display: flex;
+            position: relative;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        
+        .tracking-detail-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .detail-time {
+            min-width: 135px;
+            padding-right: 20px;
+        }
+        
+        .detail-time-value {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .detail-time-date {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+        
+        .detail-status {
+            position: relative;
+            padding-left: 30px;
+            flex: 1;
+        }
+        
+        .detail-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            position: absolute;
+            left: -15px;
+            top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .detail-circle.active {
+            background-color: var(--primary-color);
+            animation: pulse-circle 2s infinite;
+        }
+        
+        @keyframes pulse-circle {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(255, 87, 34, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
+            }
+        }
+        
+        .detail-message {
+            padding-top: 0px;
+            line-height: 1.5;
+        }
+        
+        .detail-message strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        /* 향상된 지도 컨테이너 */
+        .map-container {
+            height: 350px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-placeholder {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 18px;
+            color: var(--light-text);
+            background-color: #f7f7f7;
+            backgroun
+</style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="logout.html">로그아웃</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="page-header">
+                <h1>배송 조회</h1>
+                <p>신청하신 조호물품의 배송 현황을 실시간으로 확인하실 수 있습니다.</p>
+            </section>
+
+            <section class="tracking-container">
+                <div class="tracking-tabs">
+                    <div class="tracking-tab active" data-content="delivery-info">배송 정보</div>
+                    <div class="tracking-tab" data-content="location-info">현재 위치</div>
+                    <div class="tracking-tab" data-content="package-info">물품 정보</div>
+                </div>
+                
+                <!-- 배송 정보 탭 -->
+                <div class="tracking-content active" id="delivery-info">
+                    <div class="delivery-info">
+                        <div class="delivery-info-item">
+                            <div class="delivery-info-label">운송장 번호</div>
+                            <div class="tracking-number">
+                                <span>1234-5678-9012</span>
+                                <button id="copyTrackingBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                    복사
+                                    <span class="copy-tooltip">복사됨!</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="delivery-info-item">
+                            <div class="delivery-info-label">택배사</div>
+                            <div class="delivery-info-value">OO택배</div>
+                        </div>
+                        
+                        <div class="delivery-info-item">
+                            <div class="delivery-info-label">배송 상태</div>
+                            <div class="delivery-info-value status-delivering">배송 중</div>
+                        </div>
+                        
+                        <div class="delivery-info-item">
+                            <div class="delivery-info-label">예상 배송 완료일</div>
+                            <div class="delivery-info-value">2025.04.22 (화) 오후</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-progress">
+                        <h3>배송 진행 상태</h3>
+                        
+                        <div class="tracking-timeline">
+                            <div class="tracking-timeline-progress" style="width: 65%;"></div>
+                            
+                            <div class="tracking-step">
+                                <div class="step-circle completed">
+                                    <span>✓</span>
+                                </div>
+                                <div class="step-status">접수완료</div>
+                                <div class="step-date">04.20 14:30</div>
+                            </div>
+                            
+                            <div class="tracking-step">
+                                <div class="step-circle completed">
+                                    <span>✓</span>
+                                </div>
+                                <div class="step-status">집화완료</div>
+                                <div class="step-date">04.20 16:45</div>
+                            </div>
+                            
+                            <div class="tracking-step">
+                                <div class="step-circle completed">
+                                    <span>✓</span>
+                                </div>
+                                <div class="step-status">간선상차</div>
+                                <div class="step-date">04.20 19:20</div>
+                            </div>
+                            
+                            <div class="tracking-step">
+                                <div class="step-circle active">
+                                    <span>●</span>
+                                </div>
+                                <div class="step-status">배송중</div>
+                                <div class="step-date">04.21 08:15</div>
+                            </div>
+                            
+                            <div class="tracking-step">
+                                <div class="step-circle">
+                                    <span>●</span>
+                                </div>
+                                <div class="step-status">배송완료</div>
+                                <div class="step-date">-</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tracking-details">
+                            <h3>
+                                상세 배송 정보
+                                <button id="refreshStatusBtn" class="btn-secondary" style="float:right; padding: 5px 15px; font-size: 14px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="refresh-icon">
+                                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                    </svg>
+                                    새로고침
+                                </button>
+                            </h3>
+                            
+                            <div class="tracking-detail-item">
+                                <div class="detail-time">
+                                    <div class="detail-time-value">08:15</div>
+                                    <div class="detail-time-date">2025.04.21</div>
+                                </div>
+                                <div class="detail-circle active">4</div>
+                                <div class="detail-status">
+                                    <div class="detail-message">
+                                        <strong>[서울 종로구] 배송 출발</strong>
+                                        조호물품이 배송 중입니다. 오늘 오후 배송 예정입니다.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-detail-item">
+                                <div class="detail-time">
+                                    <div class="detail-time-value">05:40</div>
+                                    <div class="detail-time-date">2025.04.21</div>
+                                </div>
+                                <div class="detail-circle">3</div>
+                                <div class="detail-status">
+                                    <div class="detail-message">
+                                        <strong>[서울 종로구 집배점] 도착</strong>
+                                        배송지 지역 집배점에 도착했습니다.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-detail-item">
+                                <div class="detail-time">
+                                    <div class="detail-time-value">19:20</div>
+                                    <div class="detail-time-date">2025.04.20</div>
+                                </div>
+                                <div class="detail-circle">2</div>
+                                <div class="detail-status">
+                                    <div class="detail-message">
+                                        <strong>[서울 중앙HUB] 간선상차</strong>
+                                        물류센터에서 배송지 방향 간선차량에 상차되었습니다.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-detail-item">
+                                <div class="detail-time">
+                                    <div class="detail-time-value">16:45</div>
+                                    <div class="detail-time-date">2025.04.20</div>
+                                </div>
+                                <div class="detail-circle">1</div>
+                                <div class="detail-status">
+                                    <div class="detail-message">
+                                        <strong>[치매안심센터] 집화완료</strong>
+                                        조호물품이 접수되어 집화 완료되었습니다.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-detail-item">
+                                <div class="detail-time">
+                                    <div class="detail-time-value">14:30</div>
+                                    <div class="detail-time-date">2025.04.20</div>
+                                </div>
+                                <div class="detail-circle">0</div>
+                                <div class="detail-status">
+                                    <div class="detail-message">
+                                        <strong>[치매안심센터] 접수</strong>
+                                        주문하신 조호물품이 접수되었습니다.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 위치 정보 탭 -->
+                <div class="tracking-content" id="location-info">
+                    <div class="map-container">
+                        <div class="map-placeholder">
+                            <div class="map-placeholder-icon">📍</div>
+                            <p>현재 배송 위치를 확인하세요</p>
+                        </div>
+                        
+                        <div class="map-controls">
+                            <button class="map-control-btn" title="확대">+</button>
+                            <button class="map-control-btn" title="축소">-</button>
+                            <button class="map-control-btn" title="새로고침">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="current-location">
+                            <span class="location-icon">📍</span>
+                            <span id="currentLocation">서울특별시 종로구 이촌동</span>
+                        </div>
+                        
+                        <div class="real-time-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="refresh-icon">
+                                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                            </svg>
+                            실시간 추적
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 물품 정보 탭 -->
+                <div class="tracking-content" id="package-info">
+                    <div class="package-info">
+                        <div class="package-item">
+                            <h3>배송 물품 정보</h3>
+                            <div class="package-content">
+                                <img src="../images/product1.jpg" alt="성인용 기저귀" class="package-image" onerror="this.src='https://via.placeholder.com/80x80?text=기저귀'">
+                                <div class="package-details">
+                                    <div class="package-name">성인용 기저귀</div>
+                                    <div class="package-quantity">중형 (20매) x 2개</div>
+                                </div>
+                            </div>
+                            <div class="package-content">
+                                <img src="../images/product2.jpg" alt="조호용 물티슈" class="package-image" onerror="this.src='https://via.placeholder.com/80x80?text=물티슈'">
+                                <div class="package-details">
+                                    <div class="package-name">조호용 물티슈</div>
+                                    <div class="package-quantity">대형 (100매) x 1개</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="package-item">
+                            <h3>배송지 정보</h3>
+                            <div class="form-group">
+                                <div class="delivery-info-label">수령인</div>
+                                <div class="delivery-info-value">홍길동</div>
+                            </div>
+                            <div class="form-group">
+                                <div class="delivery-info-label">연락처</div>
+                                <div class="delivery-info-value">010-1234-5678</div>
+                            </div>
+                            <div class="form-group">
+                                <div class="delivery-info-label">주소</div>
+                                <div class="delivery-info-value">서울특별시 종로구 종로1길 1, 101동 101호</div>
+                            </div>
+                            <div class="form-group">
+                                <div class="delivery-info-label">배송 요청사항</div>
+                                <div class="delivery-info-value">문 앞에 놓아주세요.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="delivery-actions">
+                    <button id="contactDeliveryBtn" class="btn-secondary">
+                        <span class="btn-icon">📞</span>
+                        배송기사 연락
+                    </button>
+                    <button id="smsAlertBtn" class="btn-secondary">
+                        <span class="btn-icon">📱</span>
+                        배송 위치 문자 알림 신청
+                    </button>
+                    <button class="btn-primary" onclick="location.href='mypage.html'">
+                        <span class="btn-icon">📋</span>
+                        신청내역으로 돌아가기
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/delivery-tracking.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 운송장번호 복사 기능
+            const copyTrackingBtn = document.getElementById('copyTrackingBtn');
+            const copyTooltip = document.querySelector('.copy-tooltip');
+            
+            if (copyTrackingBtn) {
+                copyTrackingBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    
+                    // 운송장번호 가져오기
+                    const trackingNumber = document.querySelector('.tracking-number span').textContent;
+                    
+                    // 클립보드에 복사
+                    navigator.clipboard.writeText(trackingNumber)
+                        .then(() => {
+                            // 툴팁 표시
+                            copyTooltip.classList.add('show');
+                            setTimeout(() => {
+                                copyTooltip.classList.remove('show');
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('클립보드 복사 실패:', err);
+                            alert('클립보드 복사에 실패했습니다. 직접 번호를 선택하여 복사해주세요.');
+                        });
+                });
+            }
+            
+            // 상태 새로고침 버튼
+            const refreshStatusBtn = document.getElementById('refreshStatusBtn');
+            
+            if (refreshStatusBtn) {
+                refreshStatusBtn.addEventListener('click', function() {
+                    // 로딩 효과 표시
+                    this.disabled = true;
+                    this.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="refresh-icon">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                        </svg>
+                        업데이트 중...
+                    `;
+                    
+                    // 실제 구현에서는 서버에서 최신 배송 상태를 가져와야 함
+                    // 여기서는 시뮬레이션만 진행
+                    setTimeout(() => {
+                        this.disabled = false;
+                        this.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="refresh-icon">
+                                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                            </svg>
+                            새로고침
+                        `;
+                        
+                        // 데이터 업데이트 시각 표시
+                        const now = new Date();
+                        const hours = String(now.getHours()).padStart(2, '0');
+                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                        const seconds = String(now.getSeconds()).padStart(2, '0');
+                        const formattedTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${hours}:${minutes}:${seconds}`;
+                        
+                        // 알림 표시
+                        const updateMessage = document.createElement('div');
+                        updateMessage.className = 'alert alert-success';
+                        updateMessage.style.cssText = 'background-color: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 4px; margin-top: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;';
+                        updateMessage.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <span>배송 정보가 업데이트되었습니다. (${hours}:${minutes})</span>
+                        `;
+                        
+                        const detailsContainer = document.querySelector('.tracking-details');
+                        detailsContainer.insertBefore(updateMessage, detailsContainer.firstChild);
+                        
+                        // 5초 후 알림 사라짐
+                        setTimeout(() => {
+                            updateMessage.style.transition = 'opacity 0.5s ease';
+                            updateMessage.style.opacity = '0';
+                            setTimeout(() => {
+                                updateMessage.remove();
+                            }, 500);
+                        }, 5000);
+                        
+                        // 현재 위치 업데이트
+                        const currentLocation = document.getElementById('currentLocation');
+                        if (currentLocation) {
+                            currentLocation.textContent = '서울특별시 용산구 이촌동';
+                        }
+                        
+                        // 새 배송 상태 추가 예시
+                        // 실제 구현에서는 서버 응답에 따라 새 상태 추가
+                        const newUpdate = Math.random() > 0.7; // 70% 확률로 업데이트 표시
+                        
+                        if (newUpdate) {
+                            // 배송 이력에 새 항목 추가
+                            const trackingDetailItems = document.querySelector('.tracking-details');
+                            const firstDetailItem = trackingDetailItems.querySelector('.tracking-detail-item');
+                            
+                            const newDetailItem = document.createElement('div');
+                            newDetailItem.className = 'tracking-detail-item';
+                            newDetailItem.innerHTML = `
+                                <div class="detail-time">
+                                    <div class="detail-time-value">${hours}:${minutes}</div>
+                                    <div class="detail-time-date">2025.04.21</div>
+                                </div>
+                                <div class="detail-circle active">5</div>
+                                <div class="detail-status">
+                                    <div class="detail-message">
+                                        <strong>[서울 용산구] 배송중</strong>
+                                        배송기사가 배송지로 이동 중입니다. 잠시만 기다려주세요.
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // 기존 활성 원 비활성화
+                            const activeCircles = trackingDetailItems.querySelectorAll('.detail-circle.active');
+                            activeCircles.forEach(circle => {
+                                circle.classList.remove('active');
+                            });
+                            
+                            // 새 항목 추가
+                            trackingDetailItems.insertBefore(newDetailItem, firstDetailItem);
+                            
+                            // 애니메이션 효과로 강조
+                            newDetailItem.style.backgroundColor = '#fffde7';
+                            setTimeout(() => {
+                                newDetailItem.style.transition = 'background-color 1s ease';
+                                newDetailItem.style.backgroundColor = '';
+                            }, 100);
+                        }
+                    }, 1500);
+                });
+            }
+            
+            // 탭 기능
+            const trackingTabs = document.querySelectorAll('.tracking-tab');
+            const trackingContents = document.querySelectorAll('.tracking-content');
+            
+            trackingTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 모든 탭에서 active 클래스 제거
+                    trackingTabs.forEach(tab => tab.classList.remove('active'));
+                    trackingContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 클릭한 탭에 active 클래스 추가
+                    this.classList.add('active');
+                    
+                    // 해당 콘텐츠 활성화
+                    const contentId = this.getAttribute('data-content');
+                    const content = document.getElementById(contentId);
+                    if (content) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+            
+            // 배송기사 연락 버튼
+            const contactDeliveryBtn = document.getElementById('contactDeliveryBtn');
+            
+            if (contactDeliveryBtn) {
+                contactDeliveryBtn.addEventListener('click', function() {
+                    // 택배사 연락처 안내
+                    const confirmCall = confirm('택배기사에게 연결하시겠습니까?\n\n연결 전화번호: 010-9876-5432');
+                    
+                    if (confirmCall) {
+                        // 실제 구현에서는 전화 연결 (모바일 환경)
+                        window.location.href = 'tel:01098765432';
+                    }
+                });
+            }
+            
+            // SMS 알림 신청 버튼
+            const smsAlertBtn = document.getElementById('smsAlertBtn');
+            
+            if (smsAlertBtn) {
+                smsAlertBtn.addEventListener('click', function() {
+                    // 알림 신청 처리
+                    this.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        알림 신청 완료
+                    `;
+                    this.style.backgroundColor = '#4CAF50';
+                    this.style.color = 'white';
+                    this.disabled = true;
+                    
+                    // 알림 효과
+                    alert('배송 위치 문자 알림이 신청되었습니다. 배송 위치가 업데이트되면 문자로 알려드립니다.');
+                });
+            }
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배송 조회 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 배송 조회 페이지 향상된 스타일 */
+        .tracking-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .delivery-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .delivery-info-item {
+            flex: 1;
+            min-width: 220px;
+        }
+        
+        .delivery-info-label {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 8px;
+        }
+        
+        .delivery-info-value {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .status-delivering {
+            color: #1565C0;
+        }
+        
+        .status-completed {
+            color: #2E7D32;
+        }
+        
+        /* 강화된 배송 진행 상태 */
+        .tracking-progress {
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .tracking-progress h3 {
+            font-size: 20px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .tracking-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .tracking-timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .tracking-timeline-progress {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 4px;
+            background-color: var(--primary-color);
+            z-index: 1;
+            transition: width 1s ease-in-out;
+        }
+        
+        .tracking-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .step-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.5s ease;
+            font-weight: bold;
+            color: #aaa;
+        }
+        
+        .step-circle.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+            animation: pulse-active 2s infinite;
+        }
+        
+        .step-circle.completed {
+            border-color: var(--success-color);
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        @keyframes pulse-active {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 87, 34, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
+            }
+        }
+        
+        .step-status {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        
+        .step-date {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+        
+        /* 향상된 상세 배송 정보 */
+        .tracking-details {
+            margin-top: 40px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+        }
+        
+        .tracking-details h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .tracking-detail-item {
+            display: flex;
+            position: relative;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        
+        .tracking-detail-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .detail-time {
+            min-width: 135px;
+            padding-right: 20px;
+        }
+        
+        .detail-time-value {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .detail-time-date {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+        
+        .detail-status {
+            position: relative;
+            padding-left: 30px;
+            flex: 1;
+        }
+        
+        .detail-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            position: absolute;
+            left: -15px;
+            top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .detail-circle.active {
+            background-color: var(--primary-color);
+            animation: pulse-circle 2s infinite;
+        }
+        
+        @keyframes pulse-circle {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(255, 87, 34, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
+            }
+        }
+        
+        .detail-message {
+            padding-top: 0px;
+            line-height: 1.5;
+        }
+        
+        .detail-message strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        /* 향상된 지도 컨테이너 */
+        .map-container {
+            height: 350px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-placeholder {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 18px;
+            color: var(--light-text);
+            background-color: #f7f7f7;
+            background-image: url('/api/placeholder/800/350?text=배송+위치+지도');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .map-placeholder-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: white;
+            border-radius: 30px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .map-control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: #555;
+            transition: all 0.3s ease;
+        }
+        
+        .map-control-btn:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .current-location {
+            position: absolute;
+            left: 15px;
+            bottom: 15px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .location-icon {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+        
+        /* 패키지 정보 개선 */
+        .package-info {
+            display: flex;
+            margin-top: 35px;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .package-item {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .package-item h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .package-item h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .package-content {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        
+        .package-content:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .package-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+            border: 1px solid #eee;
+        }
+        
+        .package-details {
+            flex: 1;
+        }
+        
+        .package-name {
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .package-quantity {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .delivery-info-label {
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .delivery-info-value {
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+        
+        /* 액션 버튼 개선 */
+        .delivery-actions {
+            margin-top: 35px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .delivery-actions button {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .delivery-actions button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-icon {
+            font-size: 20px;
+        }
+        
+        /* 추가: 실시간 업데이트 배지 */
+        .real-time-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(255, 87, 34, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
+            }
+        }
+        
+        .refresh-icon {
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 모바일 조정 */
+        @media (max-width: 768px) {
+            .tracking-timeline {
+                overflow-x: auto;
+                padding-bottom: 20px;
+                justify-content: flex-start;
+            }
+            
+            .tracking-step {
+                min-width: 100px;
+                margin-right: 20px;
+            }
+            
+            .package-item {
+                min-width: 100%;
+            }
+            
+            .delivery-actions button {
+                width: 100%;
+            }
+        }
+        
+        /* 탭 인터페이스 추가 */
+        .tracking-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 25px;
+        }
+        
+        .tracking-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            position: relative;
+        }
+        
+        .tracking-tab.active {
+            color: var(--primary-color);
+        }
+        
+        .tracking-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .tracking-content {
+            display: none;
+        }
+        
+        .tracking-content.active {
+            display: block;
+        }
+        
+        /* 운송장 복사 버튼 스타일 */
+        .tracking-number {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tracking-number span {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        #copyTrackingBtn {
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        #copyTrackingBtn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        /* 복사 확인 툴팁 */
+        .copy-tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .copy-tooltip.show {
+            opacity: 1;
+        }

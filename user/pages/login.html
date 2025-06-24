@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 로그인 섹션 스타일 */
+        .login-section {
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .login-box {
+            width: 450px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f7f7f7;
+            font-size: 16px;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        /* 체크박스와 텍스트가 한 줄에 나란히 오도록 수정 */
+        .remember-me-container {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;  /* 줄바꿈 방지 */
+        }
+        
+        .remember-me-container input[type="checkbox"] {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        
+        .remember-me-container label {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+            display: inline;  /* inline 요소로 설정하여 한 줄에 표시 */
+        }
+        
+        .find-links {
+            text-align: right;
+        }
+        
+        .find-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .login-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .login-links a {
+            color: #666;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="login-section">
+                <div class="login-box">
+                    <h2 class="login-title">로그인</h2>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="userId">아이디(E-mail)</label>
+                            <input type="text" id="userId" name="userId" class="form-control" placeholder="아이디(E-mail)를 입력해 주세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">비밀번호</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호를 입력해 주세요">
+                        </div>
+                        <div class="login-options">
+                            <!-- 체크박스와 텍스트를 한 줄에 배치 -->
+                            <div class="remember-me-container">
+                                <input type="checkbox" id="remember" name="remember">
+                                <label for="remember">아이디 저장</label>
+                            </div>
+                            <div class="find-links">
+                                <a href="#" id="forgotPasswordLink">아이디/비밀번호 찾기</a>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-login">로그인</button>
+                        <div class="login-links">
+                            <a href="register.html">회원가입</a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+<!-- 기존 스크립트 교체 -->
+<script src="../js/main.js"></script>
+<script src="../js/api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 회원가입 완료 메시지 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    const registered = urlParams.get('registered');
+    
+    if (registered === 'true') {
+        showSuccess('회원가입이 완료되었습니다! 로그인해주세요.');
+    }
+    
+    // 이미 로그인된 사용자라면 메인 페이지로 이동
+    if (currentUser) {
+        window.location.href = '../index.html';
+        return;
+    }
+    
+    // 로그인 폼 처리
+    const loginForm = document.getElementById('loginForm');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            try {
+                showLoading(submitButton);
+                
+                const formData = new FormData(this);
+                const email = formData.get('userId'); // HTML에서 userId로 되어있음
+                const password = formData.get('password');
+                
+                if (!email || !password) {
+                    throw new Error('이메일과 비밀번호를 모두 입력해주세요.');
+                }
+                
+                // 로그인 API 호출
+                const result = await loginUser(email, password);
+                
+                if (result.success) {
+                    showSuccess(`${result.user.name}님, 환영합니다!`);
+                    
+                    // 메인 페이지로 이동
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || '로그인에 실패했습니다.');
+                }
+                
+            } catch (error) {
+                console.error('로그인 에러:', error);
+                showError(error.message);
+            } finally {
+                hideLoading(submitButton, originalText);
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>

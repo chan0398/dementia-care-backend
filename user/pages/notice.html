@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 공지사항 페이지 스타일 */
+        .notice-list {
+            margin-top: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .notice-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .notice-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notice-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .notice-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .notice-date {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+        
+        .notice-preview {
+            font-size: 14px;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            max-height: 42px;
+        }
+        
+        .notice-content {
+            display: none;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .notice-content.active {
+            display: block;
+        }
+        
+        .notice-content p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .notice-category {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: rgba(255, 87, 34, 0.1);
+            color: var(--primary-color);
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .notice-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 30px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .notice-pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 5px;
+        }
+        
+        .page-button {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .page-button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .page-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .page-button.nav {
+            width: auto;
+            padding: 0 10px;
+        }
+        
+        .notice-search {
+            display: flex;
+            margin-bottom: 20px;
+            max-width: 500px;
+        }
+        
+        .notice-search input {
+            flex: 1;
+            margin-bottom: 0;
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .notice-search button {
+            width: 80px;
+            margin-left: -1px;
+            border-radius: 0 4px 4px 0;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* 중요 공지사항 스타일 */
+        .notice-item.important {
+            background-color: rgba(255, 87, 34, 0.05);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .notice-item.important .notice-title::before {
+            content: '중요';
+            display: inline-block;
+            padding: 3px 6px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="page-header">
+                <h1>공지사항</h1>
+                <p>치매안심센터 조호물품 신청 서비스의 새로운 소식과 안내사항을 확인하세요.</p>
+            </section>
+
+            <section class="notice-section">
+                <!-- 공지사항 검색 -->
+                <div class="notice-search">
+                    <input type="text" placeholder="검색어를 입력하세요">
+                    <button type="submit">검색</button>
+                </div>
+                
+                <!-- 공지사항 필터 -->
+                <div class="notice-filter">
+                    <button class="filter-button active" data-category="all">전체</button>
+                    <button class="filter-button" data-category="system">시스템 공지</button>
+                    <button class="filter-button" data-category="service">서비스 안내</button>
+                    <button class="filter-button" data-category="event">이벤트</button>
+                    <button class="filter-button" data-category="update">업데이트</button>
+                </div>
+                
+                <!-- 공지사항 목록 -->
+                <div class="notice-list">
+                    <!-- 공지사항 항목 1: 중요 공지 -->
+                    <div class="notice-item important" data-category="system">
+                        <div class="notice-header">
+                            <div class="notice-title">조호물품 신청 서비스 개편 안내</div>
+                            <div class="notice-date">2025.04.15</div>
+                        </div>
+                        <div class="notice-preview">
+                            2025년 5월 1일부터 치매안심센터 조호물품 신청 서비스가 개편됩니다. 주요 변경사항은 다음과 같습니다...
+                        </div>
+                        <div class="notice-content">
+                            <p>안녕하세요, 치매안심센터입니다.</p>
+                            <p>2025년 5월 1일부터 치매안심센터 조호물품 신청 서비스가 개편되어 더욱 편리하게 이용하실 수 있게 되었습니다. 주요 변경사항은 다음과 같습니다.</p>
+                            <ul>
+                                <li>온라인으로 조호물품 신청 및 배송 서비스 시작</li>
+                                <li>복잡한 절차 간소화로 승인 과정 신속화 (최대 1일 이내)</li>
+                                <li>실시간 배송 조회 시스템 도입</li>
+                                <li>조호물품 품목 확대 (기존 20종 → 35종)</li>
+                            </ul>
+                            <p>기존에 등록되어 있는 회원님은 별도의 추가 등록 없이 바로 이용 가능합니다. 다만, 배송 정보는 '내정보' 메뉴에서 확인 및 수정해주시기 바랍니다.</p>
+                            <p>더 나은 서비스로 보답하겠습니다. 감사합니다.</p>
+                            <p><strong>문의사항</strong>: 02-123-4567 (평일 09:00 ~ 18:00)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 공지사항 항목 2 -->
+                    <div class="notice-item" data-category="service">
+                        <div class="notice-header">
+                            <div class="notice-title">2025년 여름 조호물품 신청 기간 안내</div>
+                            <div class="notice-date">2025.04.10</div>
+                        </div>
+                        <div class="notice-preview">
+                            2025년 여름(6~8월) 조호물품 신청 기간이 4월 15일부터 5월 15일까지로 운영됩니다. 해당 기간 내 신청해주시기 바랍니다...
+                        </div>
+                        <div class="notice-content">
+                            <p>안녕하세요, 치매안심센터입니다.</p>
+                            <p>2025년 여름(6~8월) 조호물품 신청 기간을 안내해 드립니다.</p>
+                            <p><strong>신청 기간</strong>: 2025년 4월 15일 ~ 5월 15일</p>
+                            <p><strong>배송 시작</strong>: 2025년 5월 20일부터 순차적으로 배송</p>
+                            <p>신청 가능한 물품 목록과 수량은 '조호물품 신청' 메뉴에서 확인하실 수 있습니다. 해당 기간 이후에도 신청은 가능하나, 재고 상황에 따라 일부 품목은 제한될 수 있으니 가급적 신청 기간 내 접수 부탁드립니다.</p>
+                            <p>감사합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 공지사항 항목 3 -->
+                    <div class="notice-item" data-category="event">
+                        <div class="notice-header">
+                            <div class="notice-title">치매 예방 교육 프로그램 참여자 모집</div>
+                            <div class="notice-date">2025.04.03</div>
+                        </div>
+                        <div class="notice-preview">
+                            치매 예방을 위한 '두뇌 건강 지키기' 교육 프로그램 참여자를 모집합니다. 관심 있는 분들의 많은 참여 바랍니다...
+                        </div>
+                        <div class="notice-content">
+                            <p>안녕하세요, 치매안심센터입니다.</p>
+                            <p>치매 예방을 위한 '두뇌 건강 지키기' 교육 프로그램 참여자를 모집합니다.</p>
+                            <p><strong>일정</strong>: 2025년 5월 10일 ~ 6월 14일 (매주 토요일, 총 6회)</p>
+                            <p><strong>시간</strong>: 오전 10:00 ~ 12:00</p>
+                            <p><strong>장소</strong>: 서울시 치매안심센터 교육실 (서울특별시 종로구 종로1길 1)</p>
+                            <p><strong>대상</strong>: 만 60세 이상 어르신 및 보호자</p>
+                            <p><strong>내용</strong>:</p>
+                            <ul>
+                                <li>치매의 이해와 예방법</li>
+                                <li>인지훈련 프로그램</li>
+                                <li>건강한 식습관과 운동법</li>
+                                <li>스트레스 관리법</li>
+                                <li>두뇌 활성화 게임</li>
+                            </ul>
+                            <p><strong>신청 방법</strong>: 홈페이지 '교육 프로그램' 메뉴 또는 전화 신청 (02-123-4567)</p>
+                            <p>많은 관심과 참여 부탁드립니다. 감사합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 공지사항 항목 4 -->
+                    <div class="notice-item" data-category="update">
+                        <div class="notice-header">
+                            <div class="notice-title">모바일 앱 출시 안내</div>
+                            <div class="notice-date">2025.03.25</div>
+                        </div>
+                        <div class="notice-preview">
+                            치매안심센터 조호물품 신청 서비스 모바일 앱이 출시되었습니다. 이제 스마트폰으로 더 편리하게 서비스를 이용하세요...
+                        </div>
+                        <div class="notice-content">
+                            <p>안녕하세요, 치매안심센터입니다.</p>
+                            <p>치매안심센터 조호물품 신청 서비스 모바일 앱이 출시되었습니다. 이제 스마트폰으로 더 편리하게 서비스를 이용하실 수 있습니다.</p>
+                            <p><strong>주요 기능</strong>:</p>
+                            <ul>
+                                <li>조호물품 검색 및 신청</li>
+                                <li>실시간 배송 현황 조회</li>
+                                <li>신청 내역 관리</li>
+                                <li>알림 서비스 (승인 완료, 배송 시작 등)</li>
+                                <li>공지사항 및 교육 정보 확인</li>
+                            </ul>
+                            <p><strong>다운로드 방법</strong>:</p>
+                            <p>- 안드로이드: Google Play 스토어에서 '치매안심센터 조호물품' 검색</p>
+                            <p>- iOS: App Store에서 '치매안심센터 조호물품' 검색</p>
+                            <p>모바일 앱 이용 중 불편사항이나 개선 의견은 앱 내 '의견 보내기' 기능을 통해 알려주시면 적극 반영하겠습니다.</p>
+                            <p>감사합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 공지사항 항목 5 -->
+                    <div class="notice-item" data-category="service">
+                        <div class="notice-header">
+                            <div class="notice-title">신규 조호물품 추가 안내</div>
+                            <div class="notice-date">2025.03.15</div>
+                        </div>
+                        <div class="notice-preview">
+                            4월부터 신규 조호물품이 추가됩니다. 새롭게 추가되는 물품은 다음과 같습니다...
+                        </div>
+                        <div class="notice-content">
+                            <p>안녕하세요, 치매안심센터입니다.</p>
+                            <p>4월부터 신규 조호물품이 추가됩니다. 새롭게 추가되는 물품은 다음과 같습니다.</p>
+                            <ul>
+                                <li><strong>미끄럼방지 신발</strong>: 실내에서 안전하게 이동할 수 있도록 도와주는 미끄럼방지 신발</li>
+                                <li><strong>낙상방지 보호대</strong>: 낙상 시 충격을 최소화해주는 엉덩이 보호대</li>
+                                <li><strong>인지활동 워크북</strong>: 치매 환자의 인지기능 유지에 도움이 되는 활동 워크북</li>
+                                <li><strong>위치 추적기</strong>: 배회 증상이 있는 환자를 위한 휴대용 위치 추적기</li>
+                                <li><strong>식사 보조 식기세트</strong>: 스스로 식사하기 편리한 특수 제작 식기세트</li>
+                            </ul>
+                            <p>신규 물품은 '조호물품 신청' 메뉴에서 확인하실 수 있으며, 4월 1일부터 신청 가능합니다.</p>
+                            <p>감사합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 페이지네이션 -->
+                <div class="notice-pagination">
+                    <div class="page-button nav">이전</div>
+                    <div class="page-button active">1</div>
+                    <div class="page-button">2</div>
+                    <div class="page-button">3</div>
+                    <div class="page-button nav">다음</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 공지사항 아이템 클릭 이벤트
+            const noticeItems = document.querySelectorAll('.notice-item');
+            
+            noticeItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const content = this.querySelector('.notice-content');
+                    
+                    // 내용 표시/숨김 토글
+                    if (content.classList.contains('active')) {
+                        content.classList.remove('active');
+                    } else {
+                        // 다른 항목 닫기 (선택사항)
+                        document.querySelectorAll('.notice-content.active').forEach(activeContent => {
+                            activeContent.classList.remove('active');
+                        });
+                        
+                        // 현재 항목 열기
+                        content.classList.add('active');
+                    }
+                });
+            });
+            
+            // 카테고리 필터링
+            const filterButtons = document.querySelectorAll('.filter-button');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 버튼 활성화 상태 변경
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 카테고리 가져오기
+                    const category = this.getAttribute('data-category');
+                    
+                    // 항목 필터링
+                    noticeItems.forEach(item => {
+                        if (category === 'all' || item.getAttribute('data-category') === category) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // 검색 기능
+            const searchInput = document.querySelector('.notice-search input');
+            const searchButton = document.querySelector('.notice-search button');
+            
+            const searchNotices = () => {
+                const searchText = searchInput.value.toLowerCase().trim();
+                
+                if (searchText === '') {
+                    // 검색어가 없으면 모든 항목 표시 (현재 선택된 카테고리 기준)
+                    const activeCategory = document.querySelector('.filter-button.active').getAttribute('data-category');
+                    
+                    noticeItems.forEach(item => {
+                        if (activeCategory === 'all' || item.getAttribute('data-category') === activeCategory) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    return;
+                }
+                
+                // 검색어가 있으면 제목과 내용에서 검색
+                noticeItems.forEach(item => {
+                    const title = item.querySelector('.notice-title').textContent.toLowerCase();
+                    const preview = item.querySelector('.notice-preview').textContent.toLowerCase();
+                    const content = item.querySelector('.notice-content').textContent.toLowerCase();
+                    
+                    if (title.includes(searchText) || preview.includes(searchText) || content.includes(searchText)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            };
+            
+            searchButton.addEventListener('click', searchNotices);
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchNotices();
+                }
+            });
+            
+            // 페이지네이션 (예시 기능만 구현)
+            const pageButtons = document.querySelectorAll('.page-button:not(.nav)');
+            const navButtons = document.querySelectorAll('.page-button.nav');
+            
+            pageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    pageButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 실제 구현에서는 여기서 해당 페이지 데이터를 불러오는 API 호출
+                    console.log(`페이지 ${this.textContent} 로드`);
+                });
+            });
+            
+            // 이전/다음 페이지 버튼
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const currentPage = parseInt(document.querySelector('.page-button.active:not(.nav)').textContent);
+                    const isNext = this.textContent === '다음';
+                    
+                    let targetPage;
+                    if (isNext) {
+                        targetPage = Math.min(currentPage + 1, pageButtons.length);
+                    } else {
+                        targetPage = Math.max(currentPage - 1, 1);
+                    }
+                    
+                    // 해당 페이지 버튼 클릭
+                    pageButtons[targetPage - 1].click();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

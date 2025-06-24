@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 상세 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 상품 상세 페이지 스타일 */
+        .product-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .product-detail-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .product-image-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .product-main-image {
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .product-main-image img {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        
+        .product-thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .thumbnail.active {
+            border-color: var(--primary-color);
+        }
+        
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .product-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .product-category {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 20px;
+        }
+        
+        .product-description {
+            margin-bottom: 20px;
+        }
+        
+        .product-description p {
+            margin-bottom: 10px;
+        }
+        
+        .product-spec {
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .spec-table th, .spec-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .spec-table th {
+            width: 30%;
+            color: var(--light-text);
+        }
+        
+        .product-request-box {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .quantity-selector label {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+        /* 숫자 입력 화살표 제거 - 모든 브라우저 호환 */
+        /* Chrome, Safari, Edge, Opera에서 화살표 제거 */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox에서 화살표 제거 */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }  
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            max-width: 120px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .quantity-decrease, .quantity-increase {
+            width: 40px;
+            height: 40px;
+            background-color: #f0f0f0;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0; /* 버튼 크기 고정 */
+        }
+        
+        .quantity-control input {
+            width: 40px;
+            width: 40px; /* 입력 필드 너비 조정 */
+            height: 40px;
+            border: none;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            text-align: center;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .quantity-limit {
+            margin-left: 15px;
+            font-size: 13px;
+            color: var(--light-text);
+        }
+        
+        .request-actions {
+            margin-bottom: 20px;
+        }
+        
+        #requestBtn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+        }
+        
+        .request-info {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+        
+        .request-info p {
+            margin-bottom: 5px;
+        }
+        
+        /* 탭 스타일 */
+        .product-detail-tabs {
+            margin-bottom: 40px;
+        }
+        
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .tab-button.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .tab-panel {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        /* 관련 상품 스타일 */
+        .related-products {
+            margin-top: 40px;
+        }
+        
+        .related-product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        
+        /* 모달 기본 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            width: 550px;
+            max-width: 90%;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            transform: scale(1);
+            opacity: 1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: var(--primary-color);
+        }
+        
+        /* 선택된 상품 정보 스타일 */
+        .selected-product {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .selected-product img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-right: 15px;
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        
+        .product-info h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .product-info p {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+        
+        /* 신청 옵션 스타일 */
+        .request-options {
+            margin-bottom: 20px;
+        }
+        
+        .delivery-options {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .delivery-options h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        /* 수량 컨트롤 스타일 */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            max-width: 140px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .quantity-decrease, .quantity-increase {
+            width: 30px;
+            height: 30px;
+            background-color: #f0f0f0;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quantity-control input {
+            width: 50px;
+            height: 30px;
+            border: none;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            text-align: center;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: var(--light-text);
+            margin-top: 5px;
+        }
+        
+        /* 신청 정보 요약 스타일 */
+        .request-summary {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .request-summary h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .summary-item {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        
+        .summary-label {
+            width: 100px;
+            font-weight: 500;
+        }
+        
+        .summary-value {
+            flex: 1;
+        }
+        
+        /* 버튼 그룹 스타일 */
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .form-actions button {
+            min-width: 100px;
+        }
+        
+        /* 숨김 클래스 */
+        .hidden {
+            display: none;
+        }
+        
+        /* 신청 완료 모달 스타일 */
+        .complete-message {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            margin: 0 auto 20px;
+        }
+        
+        .complete-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .complete-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .complete-label {
+            width: 100px;
+            font-weight: 500;
+        }
+        
+        .complete-value {
+            flex: 1;
+        }
+        
+        .complete-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .complete-actions button {
+            min-width: 150px;
+        }
+        
+        /* 장바구니 모달 스타일 */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-right: 15px;
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        
+        .cart-item-info h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+        
+        .cart-actions button {
+            flex: 1;
+        }
+        
+        /* 신청 옵션 버튼 스타일 */
+        .option-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .option-button {
+            flex: 1;
+            padding: 15px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option-button:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-button.active {
+            border-color: var(--primary-color);
+            background-color: #fff3ef;
+        }
+        
+        .option-button .icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .option-button .label {
+            font-weight: 500;
+        }
+        
+        .option-button .description {
+            font-size: 12px;
+            color: var(--light-text);
+            margin-top: 5px;
+        }
+        
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                padding: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions button {
+                width: 100%;
+            }
+            
+            .complete-actions {
+                flex-direction: column;
+            }
+            
+            .complete-actions button {
+                width: 100%;
+            }
+            
+            .cart-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="product-detail-section">
+                <div class="product-detail-container">
+                    <div class="product-detail-header">
+                        <a href="application.html" class="back-link">&lt; 목록으로 돌아가기</a>
+                        <div class="breadcrumb">
+                            <span>조호물품 신청</span> &gt; <span id="categoryBreadcrumb">위생용품</span> &gt; <span id="productBreadcrumb">성인용 기저귀</span>
+                        </div>
+                    </div>
+
+                    <div class="product-detail-content">
+                        <div class="product-image-container">
+                            <div class="product-main-image">
+                                <img src="../images/product1.jpg" alt="상품 이미지" id="mainProductImage" onerror="this.src='https://via.placeholder.com/400x400?text=상품이미지'">
+                            </div>
+                            <div class="product-thumbnails">
+                                <div class="thumbnail active" data-src="../images/product1.jpg" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일1'">
+                                    <img src="../images/product1.jpg" alt="썸네일 1" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일1'">
+                                </div>
+                                <div class="thumbnail" data-src="../images/product1_2.jpg" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일2'">
+                                    <img src="../images/product1_2.jpg" alt="썸네일 2" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일2'">
+                                </div>
+                                <div class="thumbnail" data-src="../images/product1_3.jpg" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일3'">
+                                    <img src="../images/product1_3.jpg" alt="썸네일 3" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일3'">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-info-container">
+                            <h1 class="product-title">성인용 기저귀</h1>
+                            <div class="product-category">위생용품</div>
+                            <div class="product-description">
+                                <p>중형 (20매)</p>
+                            </div>
+
+                            <div class="product-spec">
+                                <h3>상품 정보</h3>
+                                <table class="spec-table">
+                                    <tr>
+                                        <th>제품명</th>
+                                        <td id="spec-name">성인용 기저귀</td>
+                                    </tr>
+                                    <tr>
+                                        <th>규격</th>
+                                        <td id="spec-size">중형</td>
+                                    </tr>
+                                    <tr>
+                                        <th>내용물</th>
+                                        <td id="spec-content">20매</td>
+                                    </tr>
+                                    <tr>
+                                        <th>특징</th>
+                                        <td id="spec-feature">고흡수성, 피부자극 최소화, 통기성 향상</td>
+                                    </tr>
+                                    <tr>
+                                        <th>수령제한</th>
+                                        <td id="spec-limit">월 1회 (최대 2개)</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="product-request-box">
+                                <div class="quantity-selector">
+                                    <label for="quantity">수량</label>
+                                    <div class="quantity-control">
+                                        <button type="button" class="quantity-decrease">-</button>
+                                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="2">
+                                        <button type="button" class="quantity-increase">+</button>
+                                    </div>
+                                    <span class="quantity-limit">* 최대 <span id="max-quantity">2</span>개까지 신청 가능</span>
+                                </div>
+                                <div class="request-actions">
+                                    <button type="button" class="btn-primary" id="requestBtn">신청하기</button>
+                                    <div class="option-buttons">
+                                        <div class="option-button active" data-type="direct">
+                                            <div class="icon">📝</div>
+                                            <div class="label">바로 신청</div>
+                                            <div class="description">즉시 신청 진행</div>
+                                        </div>
+                                        <div class="option-button" data-type="cart">
+                                            <div class="icon">🛒</div>
+                                            <div class="label">장바구니</div>
+                                            <div class="description">장바구니에 담기</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="request-info">
+                                    <p>* 치매안심센터 회원만 신청 가능합니다.</p>
+                                    <p>* 신청 후 승인 과정을 거쳐 배송이 시작됩니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-detail-tabs">
+                        <div class="tab-header">
+                            <button class="tab-button active" data-tab="details">상세정보</button>
+                            <button class="tab-button" data-tab="usage">사용방법</button>
+                            <button class="tab-button" data-tab="caution">주의사항</button>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-panel active" id="details">
+                                <h3>상세정보</h3>
+                                <div class="detail-content">
+                                    <img src="../images/product1_detail.jpg" alt="상품 상세" id="detail-image" onerror="this.src='https://via.placeholder.com/800x600?text=상세정보'">
+                                    <div class="detail-text">
+                                        <h4>제품 특징</h4>
+                                        <ul id="detail-features">
+                                            <li>빠른 흡수력: 특수 흡수층이 빠르게 수분을 흡수하여 피부를 건조하게 유지합니다.</li>
+                                            <li>향균 처리: 냄새 억제 기능으로 환자와 보호자의 불편함을 줄여줍니다.</li>
+                                            <li>부드러운 촉감: 피부에 자극이 적은 소재로 만들어 장시간 착용해도 편안합니다.</li>
+                                            <li>누수 방지: 허리와 다리 부분의 이중 차단 디자인으로 누수를 효과적으로 방지합니다.</li>
+                                        </ul>
+                                        <h4>사이즈 가이드</h4>
+                                        <p id="size-guide">중형: 허리둘레 70-90cm</p>
+                                        <p>* 다른 사이즈 필요 시 요청사항에 기재해주세요.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-panel" id="usage">
+                                <h3>사용방법</h3>
+                                <div class="usage-content">
+                                    <h4>사용 단계</h4>
+                                    <ol>
+                                        <li>깨끗하고 건조한 피부에 기저귀를 착용하세요.</li>
+                                        <li>기저귀 측면의 접착 테이프를 이용해 허리 부분을 고정하세요.</li>
+                                        <li>편안한 착용감을 위해 다리 주변을 부드럽게 정리하세요.</li>
+                                        <li>2~3시간 간격으로 확인하고 필요시 교체하세요.</li>
+                                    </ol>
+                                    <h4>교체 방법</h4>
+                                    <ul>
+                                        <li>사용한 기저귀를 제거하고 피부를 물티슈로 깨끗이 닦아주세요.</li>
+                                        <li>피부에 자극이나 붉은 반점이 있는지 확인하세요.</li>
+                                        <li>필요한 경우 보습 크림을 발라주세요.</li>
+                                        <li>새 기저귀를 착용하세요.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tab-panel" id="caution">
+                                <h3>주의사항</h3>
+                                <div class="caution-content">
+                                    <h4>사용 시 주의사항</h4>
+                                    <ul>
+                                        <li>장시간 동일한 기저귀 사용은 피부 자극을 유발할 수 있으니 주기적으로 교체해주세요.</li>
+                                        <li>피부 발진이나 알레르기 반응이 나타나면 즉시 사용을 중단하고 의사와 상담하세요.</li>
+                                        <li>사용 후 기저귀는 밀봉하여 위생적으로 처리하세요.</li>
+                                        <li>직사광선을 피해 서늘하고 건조한 곳에 보관하세요.</li>
+                                    </ul>
+                                    <h4>보관 방법</h4>
+                                    <ul>
+                                        <li>습기가 없는 건조한 장소에 보관하세요.</li>
+                                        <li>개봉 후에는 기존 포장에 보관하여 청결을 유지하세요.</li>
+                                        <li>사용 전 포장 상태와 제품을 확인하세요.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-products">
+                        <h2>함께 신청하면 좋은 물품</h2>
+                        <div class="related-product-list">
+                            <div class="product-item" data-id="5">
+                                <img src="../images/product5.jpg" alt="항균 손소독제" onerror="this.src='https://via.placeholder.com/200x200?text=항균손소독제'">
+                                <h3>항균 손소독제</h3>
+                                <p>500ml (2개)</p>
+                                <button class="btn-apply" data-id="5">신청하기</button>
+                            </div>
+                            <div class="product-item" data-id="2">
+                                <img src="../images/product2.jpg" alt="조호용 물티슈" onerror="this.src='https://via.placeholder.com/200x200?text=조호용물티슈'">
+                                <h3>조호용 물티슈</h3>
+                                <p>대형 (100매)</p>
+                                <button class="btn-apply" data-id="2">신청하기</button>
+                            </div>
+                            <div class="product-item" data-id="4">
+                                <img src="../images/product4.jpg" alt="목욕용품 세트" onerror="this.src='https://via.placeholder.com/200x200?text=목욕용품세트'">
+                                <h3>목욕용품 세트</h3>
+                                <p>종합 세트 (1박스)</p>
+                                <button class="btn-apply" data-id="4">신청하기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 조호물품 신청 모달 -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>조호물품 신청</h2>
+            
+            <div class="selected-product">
+                <img src="" alt="상품 이미지" id="modalProductImage" onerror="this.src='https://via.placeholder.com/100x100?text=상품'">
+                <div class="product-info">
+                    <h3 id="modalProductName"></h3>
+                    <p id="modalProductDesc"></p>
+                </div>
+            </div>
+            
+            <form id="requestForm">
+                <div class="request-options">
+                    <div class="form-group">
+                        <label for="modalQuantity">수량 선택</label>
+                        <div class="quantity-control">
+                            <button type="button" class="quantity-decrease">-</button>
+                            <input type="number" id="modalQuantity" name="quantity" value="1" min="1" max="2">
+                            <button type="button" class="quantity-increase">+</button>
+                        </div>
+                        <p class="form-hint">* 최대 <span id="modal-max-quantity">2</span>개까지 신청 가능합니다.</p>
+                    </div>
+                    
+                    <div class="delivery-options">
+                        <h3>배송 옵션</h3>
+                        <div class="form-group">
+                            <label for="deliveryAddress">배송지 선택</label>
+                            <select id="deliveryAddress" name="deliveryAddress">
+                                <option value="default">기본 배송지 - 홍길동 (서울특별시 종로구 종로1길 1, 101동 202호)</option>
+                                <option value="new">새로운 배송지 입력</option>
+                            </select>
+                        </div>
+                        
+                        <div id="newAddressForm" class="hidden">
+                            <div class="form-group">
+                                <label for="recipientName">받는 사람</label>
+                                <input type="text" id="recipientName" name="recipientName">
+                            </div>
+                            <div class="form-group">
+                                <label for="recipientPhone">연락처</label>
+                                <input type="tel" id="recipientPhone" name="recipientPhone" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="010-0000-0000">
+                            </div>
+                            <div class="form-group">
+                                <label for="zipCode">우편번호</label>
+                                <div class="input-with-button">
+                                    <input type="text" id="zipCode" name="zipCode" readonly>
+                                    <button type="button" id="searchAddressBtn" class="btn-secondary">주소찾기</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="address1">기본주소</label>
+                                <input type="text" id="address1" name="address1" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="address2">상세주소</label>
+                                <input type="text" id="address2" name="address2">
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="saveAsDefault" name="saveAsDefault"> 기본 배송지로 저장
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="requestNote">요청사항</label>
+                        <textarea id="requestNote" name="requestNote" rows="3" placeholder="배송 시 요청사항을 입력해주세요."></textarea>
+                    </div>
+                </div>
+                
+                <div class="request-summary">
+                    <h3>신청 정보 확인</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">신청 물품:</span>
+                        <span class="summary-value" id="summaryProductName"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">수량:</span>
+                        <span class="summary-value"><span id="summaryQuantity">1</span>개</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">배송지:</span>
+                        <span class="summary-value" id="summaryAddress">기본 배송지 - 홍길동 (서울특별시 종로구 종로1길 1, 101동 202호)</span>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-close">취소</button>
+                    <button type="submit" class="btn-primary">신청하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 신청 완료 모달 -->
+    <div id="completeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="complete-message">
+                <div class="success-icon">✓</div>
+                <h2>조호물품 신청이 완료되었습니다</h2>
+                <p>신청하신 내용이 정상적으로 접수되었습니다.</p>
+                <p>담당자 확인 후 승인 절차가 진행될 예정입니다.</p>
+                
+                <div class="complete-info">
+                    <div class="complete-item">
+                        <span class="complete-label">신청 번호:</span>
+                        <span class="complete-value" id="completeOrderNumber">1234567890</span>
+                    </div>
+                    <div class="complete-item">
+                        <span class="complete-label">신청 일시:</span>
+                        <span class="complete-value" id="completeOrderDate">2025.04.27 14:30</span>
+                    </div>
+                    <div class="complete-item">
+                        <span class="complete-label">신청 물품:</span>
+                        <span class="complete-value" id="completeProductName">성인용 기저귀 중형 (20매) 1개</span>
+                    </div>
+                </div>
+                
+                <div class="complete-actions">
+                    <button type="button" class="btn-secondary" id="btnToApplication">다른 물품 신청하기</button>
+                    <button type="button" class="btn-primary" id="btnToMypage">신청내역 확인하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 장바구니 모달 -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>장바구니에 추가되었습니다</h2>
+            
+            <div class="cart-item">
+                <img src="" alt="상품 이미지" id="cartProductImage" onerror="this.src='https://via.placeholder.com/100x100?text=상품'">
+                <div class="cart-item-info">
+                    <h3 id="cartProductName"></h3>
+                    <p><span id="cartProductQuantity">1</span>개가 장바구니에 추가되었습니다.</p>
+                </div>
+            </div>
+            
+            <div class="cart-actions">
+                <button type="button" class="btn-secondary" id="btnContinueShopping">쇼핑 계속하기</button>
+                <button type="button" class="btn-primary" id="btnViewCart">장바구니 확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // 상품 상세 페이지 확장 기능
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('상품 상세 페이지 확장 스크립트 로딩됨');
+            
+            // 전역 변수
+            let currentProduct = null;
+            const requestTypes = {
+                DIRECT: 'direct', // 바로 신청
+                CART: 'cart'      // 장바구니 담기
+            };
+            
+            // 상품 페이지 로드 시 초기화
+            const initProductPage = () => {
+                // URL에서 상품 ID 가져오기
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = parseInt(urlParams.get('id'));
+                
+                if (!productId) {
+                    console.error('상품 ID를 찾을 수 없습니다.');
+                    return;
+                }
+                
+                // 상품 데이터 가져오기 (실제로는 Ajax로 서버에서 가져와야 함)
+                fetchProductData(productId);
+            };
+            
+            // 상품 데이터 가져오기 (예시)
+            const fetchProductData = (productId) => {
+                // 실제 구현에서는 API 호출로 대체
+                // 여기서는 임시 데이터 사용
+                const products = [
+                    {
+                        id: 1,
+                        name: '성인용 기저귀',
+                        description: '중형 (20매)',
+                        category: '위생용품',
+                        mainImage: '../images/product1.jpg',
+                        detailImage: '../images/product1_detail.jpg',
+                        maxQuantity: 2,
+                        price: 0 // 무료
+                    },
+                    // 다른 상품들...
+                ];
+                
+                currentProduct = products.find(p => p.id === productId) || products[0];
+                
+                // 가져온 데이터로 UI 업데이트
+                updateProductUI(currentProduct);
+                
+                // 관련 이벤트 리스너 설정
+                setupEventListeners();
+            };
+            
+            // 상품 UI 업데이트
+            const updateProductUI = (product) => {
+                console.log('상품 UI 업데이트:', product.name);
+                
+                // 이미 구현된 updateProductDetail 함수 활용 (기존 코드 가정)
+                
+                // 신청 버튼 옵션 추가
+                const requestBtnSection = document.querySelector('.request-actions');
+                if (requestBtnSection) {
+                    requestBtnSection.innerHTML = `
+                        <button type="button" class="btn-primary" id="requestBtn">신청하기</button>
+                        <div class="option-buttons">
+                            <div class="option-button active" data-type="${requestTypes.DIRECT}">
+                                <div class="icon">📝</div>
+                                <div class="label">바로 신청</div>
+                                <div class="description">즉시 신청 진행</div>
+                            </div>
+                            <div class="option-button" data-type="${requestTypes.CART}">
+                                <div class="icon">🛒</div>
+                                <div class="label">장바구니</div>
+                                <div class="description">장바구니에 담기</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            };
+            
+            // 이벤트 리스너 설정
+            const setupEventListeners = () => {
+                // 신청 방식 선택 버튼
+                const optionButtons = document.querySelectorAll('.option-button');
+                optionButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // 다른 버튼에서 active 클래스 제거
+                        optionButtons.forEach(btn => btn.classList.remove('active'));
+                        
+                        // 클릭한 버튼에 active 클래스 추가
+                        this.classList.add('active');
+                        
+                        // 선택한 신청 방식으로 신청 버튼 텍스트 변경
+                        const requestBtn = document.getElementById('requestBtn');
+                        const requestType = this.getAttribute('data-type');
+                        
+                        if (requestBtn) {
+                            if (requestType === requestTypes.DIRECT) {
+                                requestBtn.textContent = '바로 신청하기';
+                            } else if (requestType === requestTypes.CART) {
+                                requestBtn.textContent = '장바구니에 담기';
+                            }
+                        }
+                    });
+                });
+                
+                // 신청 버튼
+                const requestBtn = document.getElementById('requestBtn');
+                if (requestBtn) {
+                    requestBtn.addEventListener('click', function() {
+                        // 선택된 신청 방식 확인
+                        const activeOption = document.querySelector('.option-button.active');
+                        const requestType = activeOption ? activeOption.getAttribute('data-type') : requestTypes.DIRECT;
+                        
+                        // 신청 방식에 따라 다른 액션
+                        if (requestType === requestTypes.DIRECT) {
+                            openRequestModal();
+                        } else if (requestType === requestTypes.CART) {
+                            addToCart();
+                        } else {
+                            // 기본값: 바로 신청
+                            openRequestModal();
+                        }
+                    });
+                }
+                
+                // 바로 신청 모달 관련 이벤트
+                setupRequestModalEvents();
+                
+                // 장바구니 모달 관련 이벤트
+                setupCartModalEvents();
+                
+                // 신청 완료 모달 관련 이벤트
+                setupCompleteModalEvents();
+            };
+            
+            // 바로 신청 모달 관련 이벤트
+            const setupRequestModalEvents = () => {
+                const requestModal = document.getElementById('requestModal');
+                const modalContent = requestModal ? requestModal.querySelector('.modal-content') : null;
+                const closeBtn = requestModal ? requestModal.querySelector('.close') : null;
+                const modalClose = requestModal ? requestModal.querySelector('.modal-close') : null;
+                
+                // 선택한 배송지에 따라 새 주소 입력 폼 표시/숨김
+                const deliveryAddressSelect = document.getElementById('deliveryAddress');
+                const newAddressForm = document.getElementById('newAddressForm');
+                
+                if (deliveryAddressSelect && newAddressForm) {
+                    deliveryAddressSelect.addEventListener('change', function() {
+                        if (this.value === 'new') {
+                            newAddressForm.classList.remove('hidden');
+                        } else {
+                            newAddressForm.classList.add('hidden');
+                        }
+                        
+                        // 요약 정보 업데이트
+                        updateSummaryAddress();
+                    });
+                }
+                
+                // 수량 선택 버튼
+                const decreaseBtn = requestModal ? requestModal.querySelector('.quantity-decrease') : null;
+                const increaseBtn = requestModal ? requestModal.querySelector('.quantity-increase') : null;
+                const quantityInput = document.getElementById('modalQuantity');
+                
+                if (decreaseBtn && increaseBtn && quantityInput) {
+                    decreaseBtn.addEventListener('click', function() {
+                        let currentValue = parseInt(quantityInput.value);
+                        if (currentValue > 1) {
+                            quantityInput.value = currentValue - 1;
+                            // 요약 정보 업데이트
+                            updateSummaryQuantity();
+                        }
+                    });
+                    
+                    increaseBtn.addEventListener('click', function() {
+                        let currentValue = parseInt(quantityInput.value);
+                        const maxQuantity = currentProduct ? currentProduct.maxQuantity : 2;
+                        
+                        if (currentValue < maxQuantity) {
+                            quantityInput.value = currentValue + 1;
+                            // 요약 정보 업데이트
+                            updateSummaryQuantity();
+                        } else {
+                            alert(`최대 ${maxQuantity}개까지 신청 가능합니다.`);
+                        }
+                    });
+                    
+                    quantityInput.addEventListener('change', function() {
+                        // 요약 정보 업데이트
+                        updateSummaryQuantity();
+                    });
+                }
+                
+                // 주소 검색 버튼
+                const searchAddressBtn = document.getElementById('searchAddressBtn');
+                if (searchAddressBtn) {
+                    searchAddressBtn.addEventListener('click', function() {
+                        // 주소 검색 API 연동 (실제 구현 시)
+                        // 여기서는 예시로 간단히 처리
+                        alert('주소 검색 기능은 실제 구현 시 Daum 우편번호 API 등을 연동해야 합니다.');
+                        document.getElementById('zipCode').value = '04524';
+                        document.getElementById('address1').value = '서울특별시 종로구 종로1길 1';
+                        document.getElementById('address2').focus();
+                    });
+                }
+                
+                // 신청 폼 제출
+                const requestForm = document.getElementById('requestForm');
+                if (requestForm) {
+                    requestForm.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        
+                        // 폼 데이터 수집
+                        const formData = {
+                            productId: currentProduct ? currentProduct.id : 1,
+                            productName: document.getElementById('modalProductName').textContent,
+                            productDesc: document.getElementById('modalProductDesc').textContent,
+                            quantity: document.getElementById('modalQuantity').value,
+                            deliveryOption: document.getElementById('deliveryAddress').value,
+                            // 새 주소인 경우 추가 정보 수집
+                            recipientName: document.getElementById('deliveryAddress').value === 'new' 
+                                ? document.getElementById('recipientName').value : '홍길동',
+                            recipientPhone: document.getElementById('deliveryAddress').value === 'new'
+                                ? document.getElementById('recipientPhone').value : '010-1234-5678',
+                            address: document.getElementById('deliveryAddress').value === 'new'
+                                ? `(${document.getElementById('zipCode').value}) ${document.getElementById('address1').value} ${document.getElementById('address2').value}`
+                                : '서울특별시 종로구 종로1길 1, 101동 202호',
+                            requestNote: document.getElementById('requestNote').value,
+                            applicationDate: new Date().toISOString(),
+                            orderNumber: generateOrderNumber(),
+                            status: '승인대기'
+                        };
+                        
+                        // 유효성 검사
+                        if (formData.deliveryOption === 'new') {
+                            if (!formData.recipientName) {
+                                alert('받는 사람 이름을 입력해주세요.');
+                                return;
+                            }
+                            if (!formData.recipientPhone) {
+                                alert('연락처를 입력해주세요.');
+                                return;
+                            }
+                            if (!formData.address) {
+                                alert('배송지 주소를 입력해주세요.');
+                                return;
+                            }
+                        }
+                        
+                        // 신청 내역 저장 (로컬 스토리지 이용)
+                        saveApplication(formData);
+                        
+                        // 신청 모달 닫기
+                        closeRequestModal();
+                        
+                        // 완료 정보 설정
+                        document.getElementById('completeOrderNumber').textContent = formData.orderNumber;
+                        const orderDate = new Date();
+                        document.getElementById('completeOrderDate').textContent = formatDate(orderDate);
+                        document.getElementById('completeProductName').textContent = 
+                            `${formData.productName} ${formData.productDesc} ${formData.quantity}개`;
+                        
+                        // 완료 모달 표시
+                        openCompleteModal();
+                    });
+                }
+                
+                // 모달 닫기 이벤트
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeRequestModal);
+                }
+                
+                if (modalClose) {
+                    modalClose.addEventListener('click', closeRequestModal);
+                }
+                
+                // 모달 외부 클릭 시 닫기
+                if (requestModal) {
+                    requestModal.addEventListener('click', function(event) {
+                        if (event.target === requestModal) {
+                            closeRequestModal();
+                        }
+                    });
+                }
+            };
+            
+            // 장바구니 모달 관련 이벤트
+            const setupCartModalEvents = () => {
+                const cartModal = document.getElementById('cartModal');
+                const closeBtn = cartModal ? cartModal.querySelector('.close') : null;
+                const btnContinueShopping = document.getElementById('btnContinueShopping');
+                const btnViewCart = document.getElementById('btnViewCart');
+                
+                // 쇼핑 계속하기 버튼
+                if (btnContinueShopping) {
+                    btnContinueShopping.addEventListener('click', function() {
+                        closeCartModal();
+                    });
+                }
+                
+	   // 장바구니 확인 버튼 - 수정된 부분
+	   if (btnViewCart) {
+ 	      btnViewCart.addEventListener('click', function() {
+  	         // 장바구니 페이지로 이동
+ 	          window.location.href = 'cart.html';
+   	       });
+   	   }
+                
+                // 모달 닫기 버튼
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeCartModal);
+                }
+                
+                // 모달 외부 클릭 시 닫기
+                if (cartModal) {
+                    cartModal.addEventListener('click', function(event) {
+                        if (event.target === cartModal) {
+                            closeCartModal();
+                        }
+                    });
+                }
+            };
+            
+            // 신청 완료 모달 관련 이벤트
+            const setupCompleteModalEvents = () => {
+                const completeModal = document.getElementById('completeModal');
+                const closeBtn = completeModal ? completeModal.querySelector('.close') : null;
+                const btnToApplication = document.getElementById('btnToApplication');
+                const btnToMypage = document.getElementById('btnToMypage');
+                
+                // 다른 물품 신청하기 버튼
+                if (btnToApplication) {
+                    btnToApplication.addEventListener('click', function() {
+                        window.location.href = 'application.html';
+                    });
+                }
+                
+                // 신청내역 확인하기 버튼
+                if (btnToMypage) {
+                    btnToMypage.addEventListener('click', function() {
+                        window.location.href = 'mypage.html';
+                    });
+                }
+                
+                // 모달 닫기 버튼
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeCompleteModal);
+                }
+                
+                // 모달 외부 클릭 시 닫기
+                if (completeModal) {
+                    completeModal.addEventListener('click', function(event) {
+                        if (event.target === completeModal) {
+                            closeCompleteModal();
+                        }
+                    });
+                }
+            };
+            
+            // 요약 정보 업데이트 함수 - 수량
+            const updateSummaryQuantity = () => {
+                const quantityInput = document.getElementById('modalQuantity');
+                const summaryQuantity = document.getElementById('summaryQuantity');
+                
+                if (quantityInput && summaryQuantity) {
+                    summaryQuantity.textContent = quantityInput.value;
+                }
+            };
+            
+            // 요약 정보 업데이트 함수 - 배송지
+            const updateSummaryAddress = () => {
+                const deliveryAddressSelect = document.getElementById('deliveryAddress');
+                const summaryAddress = document.getElementById('summaryAddress');
+                
+                if (deliveryAddressSelect && summaryAddress) {
+                    if (deliveryAddressSelect.value === 'default') {
+                        summaryAddress.textContent = '기본 배송지 - 홍길동 (서울특별시 종로구 종로1길 1, 101동 202호)';
+                    } else if (deliveryAddressSelect.value === 'new') {
+                        // 새 주소 입력 중일 경우
+                        const recipientName = document.getElementById('recipientName').value || '받는 사람';
+                        const address1 = document.getElementById('address1').value || '';
+                        const address2 = document.getElementById('address2').value || '';
+                        
+                        if (address1) {
+                            summaryAddress.textContent = `${recipientName} (${address1} ${address2})`;
+                        } else {
+                            summaryAddress.textContent = '새 배송지 입력 중...';
+                        }
+                    }
+                }
+            };
+            
+            // 바로 신청 모달 열기
+            const openRequestModal = () => {
+                const requestModal = document.getElementById('requestModal');
+                const modalContent = requestModal ? requestModal.querySelector('.modal-content') : null;
+                
+                if (!requestModal || !modalContent || !currentProduct) {
+                    console.error('모달 요소 또는 상품 정보를 찾을 수 없습니다.');
+                    return;
+                }
+                
+                // 모달 내 상품 정보 설정
+                const modalProductImage = document.getElementById('modalProductImage');
+                const modalProductName = document.getElementById('modalProductName');
+                const modalProductDesc = document.getElementById('modalProductDesc');
+                const modalMaxQuantity = document.getElementById('modal-max-quantity');
+                
+                // 상품 메인 이미지 참조
+                const mainProductImage = document.getElementById('mainProductImage');
+                
+                if (modalProductImage && mainProductImage) {
+                    modalProductImage.src = mainProductImage.src;
+                    modalProductImage.alt = mainProductImage.alt;
+                }
+                
+                if (modalProductName) {
+                    modalProductName.textContent = document.querySelector('.product-title').textContent;
+                }
+                
+                if (modalProductDesc) {
+                    modalProductDesc.textContent = document.querySelector('.product-description p').textContent;
+                }
+                
+                if (modalMaxQuantity) {
+                    modalMaxQuantity.textContent = currentProduct.maxQuantity;
+                }
+                
+                // 최대 수량 설정
+                const quantityInput = document.getElementById('modalQuantity');
+                if (quantityInput) {
+                    quantityInput.max = currentProduct.maxQuantity;
+                    quantityInput.value = 1;
+                }
+                
+                // 요약 정보 초기화
+                const summaryProductName = document.getElementById('summaryProductName');
+                if (summaryProductName) {
+                    summaryProductName.textContent = document.querySelector('.product-title').textContent;
+                }
+                
+                updateSummaryQuantity();
+                updateSummaryAddress();
+                
+                // 모달 표시
+                requestModal.style.display = 'block';
+                
+                // 모달 애니메이션
+                modalContent.style.transform = 'scale(0.8)';
+                modalContent.style.opacity = '0';
+                setTimeout(() => {
+                    modalContent.style.transition = 'all 0.3s ease';
+                    modalContent.style.transform = 'scale(1)';
+                    modalContent.style.opacity = '1';
+                }, 10);
+            };
+            
+            // 바로 신청 모달 닫기
+            const closeRequestModal = () => {
+                const requestModal = document.getElementById('requestModal');
+                const modalContent = requestModal ? requestModal.querySelector('.modal-content') : null;
+                
+                if (!requestModal || !modalContent) return;
+                
+                // 모달 애니메이션
+                modalContent.style.transition = 'all 0.3s ease';
+                modalContent.style.transform = 'scale(0.8)';
+                modalContent.style.opacity = '0';
+                
+                setTimeout(() => {
+                    requestModal.style.display = 'none';
+                    
+                    // 폼 초기화
+                    const requestForm = document.getElementById('requestForm');
+                    const newAddressForm = document.getElementById('newAddressForm');
+                    
+                    if (requestForm) requestForm.reset();
+                    if (newAddressForm) newAddressForm.classList.add('hidden');
+                    
+                    // 배송지 선택 초기화
+                    const deliveryAddressSelect = document.getElementById('deliveryAddress');
+                    if (deliveryAddressSelect) deliveryAddressSelect.value = 'default';
+                }, 300);
+            };
+            
+            // 장바구니 추가 함수
+            const addToCart = () => {
+                if (!currentProduct) {
+                    console.error('상품 정보를 찾을 수 없습니다.');
+                    return;
+                }
+                
+                // 수량 가져오기
+                const quantityInput = document.getElementById('quantity');
+                const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+                
+                // 장바구니 데이터 구성
+                const cartItem = {
+                    productId: currentProduct.id,
+                    productName: currentProduct.name,
+                    productDesc: currentProduct.description,
+                    quantity: quantity,
+                    image: currentProduct.mainImage,
+                    addedAt: new Date().toISOString()
+                };
+                
+                // 장바구니에 추가 (로컬 스토리지 이용)
+                addToCartStorage(cartItem);
+                
+                // 장바구니 모달 정보 설정
+                const cartProductImage = document.getElementById('cartProductImage');
+                const cartProductName = document.getElementById('cartProductName');
+                const cartProductQuantity = document.getElementById('cartProductQuantity');
+                
+                // 상품 메인 이미지 참조
+                const mainProductImage = document.getElementById('mainProductImage');
+                
+                if (cartProductImage && mainProductImage) {
+                    cartProductImage.src = mainProductImage.src;
+                    cartProductImage.alt = mainProductImage.alt;
+                }
+                
+                if (cartProductName) {
+                    cartProductName.textContent = `${currentProduct.name} ${currentProduct.description}`;
+                }
+                
+                if (cartProductQuantity) {
+                    cartProductQuantity.textContent = quantity;
+                }
+                
+                // 장바구니 모달 표시
+                openCartModal();
+            };
+            
+            // 장바구니 모달 열기
+            const openCartModal = () => {
+                const cartModal = document.getElementById('cartModal');
+                const modalContent = cartModal ? cartModal.querySelector('.modal-content') : null;
+                
+                if (!cartModal || !modalContent) {
+                    console.error('장바구니 모달 요소를 찾을 수 없습니다.');
+                    return;
+                }
+                
+                // 모달 표시
+                cartModal.style.display = 'block';
+                
+                // 모달 애니메이션
+                modalContent.style.transform = 'scale(0.8)';
+                modalContent.style.opacity = '0';
+                setTimeout(() => {
+                    modalContent.style.transition = 'all 0.3s ease';
+                    modalContent.style.transform = 'scale(1)';
+                    modalContent.style.opacity = '1';
+                }, 10);
+            };
+            
+            // 장바구니 모달 닫기
+            const closeCartModal = () => {
+                const cartModal = document.getElementById('cartModal');
+                const modalContent = cartModal ? cartModal.querySelector('.modal-content') : null;
+                
+                if (!cartModal || !modalContent) return;
+                
+                // 모달 애니메이션
+                modalContent.style.transition = 'all 0.3s ease';
+                modalContent.style.transform = 'scale(0.8)';
+                modalContent.style.opacity = '0';
+                
+                setTimeout(() => {
+                    cartModal.style.display = 'none';
+                }, 300);
+            };
+            
+            // 완료 모달 열기
+            const openCompleteModal = () => {
+                const completeModal = document.getElementById('completeModal');
+                const modalContent = completeModal ? completeModal.querySelector('.modal-content') : null;
+                
+                if (!completeModal || !modalContent) {
+                    console.error('완료 모달 요소를 찾을 수 없습니다.');
+                    return;
+                }
+                
+                // 모달 표시
+                completeModal.style.display = 'block';
+                
+                // 모달 애니메이션
+                modalContent.style.transform = 'scale(0.8)';
+                modalContent.style.opacity = '0';
+                setTimeout(() => {
+                    modalContent.style.transition = 'all 0.3s ease';
+                    modalContent.style.transform = 'scale(1)';
+                    modalContent.style.opacity = '1';
+                }, 10);
+            };
+            
+            // 완료 모달 닫기
+            const closeCompleteModal = () => {
+                const completeModal = document.getElementById('completeModal');
+                const modalContent = completeModal ? completeModal.querySelector('.modal-content') : null;
+                
+                if (!completeModal || !modalContent) return;
+                
+                // 모달 애니메이션
+                modalContent.style.transition = 'all 0.3s ease';
+                modalContent.style.transform = 'scale(0.8)';
+                modalContent.style.opacity = '0';
+                
+                setTimeout(() => {
+                    completeModal.style.display = 'none';
+                }, 300);
+            };
+            
+            // 조호물품 신청 내역 저장 (로컬 스토리지 이용)
+            const saveApplication = (applicationData) => {
+                // 기존 신청 내역 가져오기
+                let applications = JSON.parse(localStorage.getItem('careSupplyApplications')) || [];
+                
+                // 신규 신청 내역 추가
+                applications.push(applicationData);
+                
+                // 저장
+                localStorage.setItem('careSupplyApplications', JSON.stringify(applications));
+                console.log('신청 내역이 저장되었습니다.');
+            };
+            
+            // 장바구니에 추가 (로컬 스토리지 이용)
+            const addToCartStorage = (cartItem) => {
+                // 기존 장바구니 가져오기
+                let cart = JSON.parse(localStorage.getItem('careSupplyCart')) || [];
+                
+                // 동일한 상품이 있는지 확인
+                const existingItemIndex = cart.findIndex(item => item.productId === cartItem.productId);
+                
+                if (existingItemIndex !== -1) {
+                    // 동일한 상품이 있으면 수량만 증가
+                    cart[existingItemIndex].quantity += cartItem.quantity;
+                } else {
+                    // 없으면 새로 추가
+                    cart.push(cartItem);
+                }
+                
+                // 저장
+                localStorage.setItem('careSupplyCart', JSON.stringify(cart));
+                console.log('장바구니에 추가되었습니다.');
+            };
+            
+            // 주문번호 생성
+            const generateOrderNumber = () => {
+                const date = new Date();
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const random = Math.floor(Math.random() * 9000) + 1000;
+                
+                return `${year}${month}${day}-${random}`;
+            };
+            
+            // 날짜 포맷팅
+            const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                
+                return `${year}.${month}.${day} ${hours}:${minutes}`;
+            };
+            
+            // 탭 기능
+            const setupTabs = () => {
+                const tabButtons = document.querySelectorAll('.tab-button');
+                const tabPanels = document.querySelectorAll('.tab-panel');
+                
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // 모든 탭 버튼에서 active 클래스 제거
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        
+                        // 모든 탭 패널 숨기기
+                        tabPanels.forEach(panel => panel.classList.remove('active'));
+                        
+                        // 클릭한 탭 버튼 활성화
+                        this.classList.add('active');
+                        
+                        // 해당 탭 패널 표시
+                        const tabId = this.getAttribute('data-tab');
+                        document.getElementById(tabId).classList.add('active');
+                    });
+                });
+            };
+            
+            // 썸네일 클릭 이벤트
+            const setupThumbnails = () => {
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                const mainImage = document.getElementById('mainProductImage');
+                
+                thumbnails.forEach(thumbnail => {
+                    thumbnail.addEventListener('click', function() {
+                        // 모든 썸네일에서 active 클래스 제거
+                        thumbnails.forEach(item => item.classList.remove('active'));
+                        
+                        // 클릭한 썸네일에 active 클래스 추가
+                        this.classList.add('active');
+                        
+                        // 메인 이미지 변경
+                        const imgSrc = this.getAttribute('data-src');
+                        if (imgSrc && mainImage) {
+                            mainImage.src = imgSrc;
+                        }
+                    });
+                });
+            };
+            
+            // 수량 선택 기능
+            const setupQuantitySelector = () => {
+                const quantityInput = document.getElementById('quantity');
+                const decreaseBtn = document.querySelector('.product-request-box .quantity-decrease');
+                const increaseBtn = document.querySelector('.product-request-box .quantity-increase');
+                
+                if (decreaseBtn && increaseBtn && quantityInput) {
+                    decreaseBtn.addEventListener('click', function() {
+                        let currentValue = parseInt(quantityInput.value);
+                        if (currentValue > 1) {
+                            quantityInput.value = currentValue - 1;
+                        }
+                    });
+                    
+                    increaseBtn.addEventListener('click', function() {
+                        let currentValue = parseInt(quantityInput.value);
+                        const maxQuantity = parseInt(quantityInput.getAttribute('max') || (currentProduct ? currentProduct.maxQuantity : 2));
+                        
+                        if (currentValue < maxQuantity) {
+                            quantityInput.value = currentValue + 1;
+                        } else {
+                            alert(`최대 ${maxQuantity}개까지 신청 가능합니다.`);
+                        }
+                    });
+                }
+            };
+            
+            // 기본 기능 설정
+            const setupBasicFunctions = () => {
+                setupTabs();
+                setupThumbnails();
+                setupQuantitySelector();
+            };
+            
+            // 초기화 함수 실행
+            initProductPage();
+            setupBasicFunctions();
+        });
+    </script>
+</body>
+</html>

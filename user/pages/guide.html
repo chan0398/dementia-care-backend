@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이용안내 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 이용안내 페이지 스타일 */
+        .guide-section {
+            margin-bottom: 30px;
+        }
+
+        .guide-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .guide-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .guide-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: var(--primary-color);
+        }
+
+        .guide-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .guide-card-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 87, 34, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .guide-card h2 {
+            font-size: 20px;
+            color: #333;
+            font-weight: 500;
+            margin: 0;
+            flex: 1;
+        }
+
+        .guide-card-content {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .guide-card-content p {
+            margin-bottom: 15px;
+        }
+
+        .guide-card-content ul, .guide-card-content ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .guide-card-content li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .guide-card-content ul li::before {
+            content: '•';
+            color: var(--primary-color);
+            position: absolute;
+            left: -18px;
+            font-size: 18px;
+        }
+
+        .guide-card-content ol {
+            counter-reset: item;
+            list-style-type: none;
+        }
+
+        .guide-card-content ol li {
+            counter-increment: item;
+        }
+
+        .guide-card-content ol li::before {
+            content: counter(item) ".";
+            color: var(--primary-color);
+            font-weight: 600;
+            position: absolute;
+            left: -20px;
+        }
+
+        /* 상태 표시 스타일 */
+        .status-label {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .status-pending {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+
+        .status-approved {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-delivering {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .status-completed {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-rejected {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* 프로세스 플로우 향상 */
+        .process-flow {
+            margin-top: 40px;
+        }
+
+        .process-flow h2 {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .process-flow-chart {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            margin: 0 auto;
+            max-width: 900px;
+            position: relative;
+        }
+
+        .process-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 120px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .process-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);
+        }
+
+        .process-icon::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 87, 34, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .process-content h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .process-content p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .process-arrow {
+            flex-grow: 1;
+            height: 3px;
+            background-color: var(--border-color);
+            position: relative;
+            margin: 0 10px;
+            margin-top: -100px;
+        }
+
+        .process-arrow::after {
+            content: '❯';
+            position: absolute;
+            right: -5px;
+            top: -12px;
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        /* 서비스 이용 요약 섹션 */
+        .service-summary {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        .summary-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .summary-title h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .summary-title p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .summary-cards {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .summary-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 280px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .summary-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: rgba(255, 87, 34, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 30px;
+            color: var(--primary-color);
+        }
+
+        .summary-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .summary-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .help-button {
+            display: block;
+            width: 200px;
+            padding: 12px 15px;
+            margin: 40px auto 0;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            text-decoration: none;
+        }
+
+        .help-button:hover {
+            background-color: #E64A19;
+            transform: translateY(-2px);
+        }
+
+        /* 모바일 반응형 조정 */
+        @media (max-width: 768px) {
+            .process-flow-chart {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-left: 30px;
+            }
+
+            .process-step {
+                flex-direction: row;
+                width: 100%;
+                text-align: left;
+                margin-bottom: 20px;
+            }
+
+            .process-icon {
+                margin-right: 15px;
+                margin-bottom: 0;
+            }
+
+            .process-arrow {
+                width: 3px;
+                height: 30px;
+                margin: 10px 0 10px 30px;
+                transform: rotate(90deg);
+            }
+
+            .process-arrow::after {
+                right: -8px;
+                top: -9px;
+                transform: rotate(-90deg);
+            }
+
+            .summary-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .summary-card {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="page-header">
+                <h1>이용안내</h1>
+                <p>조호물품 신청 서비스 이용 방법을 안내해 드립니다.</p>
+            </section>
+
+            <section class="guide-section">
+                <div class="guide-cards">
+                    <div class="guide-card">
+                        <div class="guide-card-header">
+                            <div class="guide-card-icon">👥</div>
+                            <h2>서비스 대상</h2>
+                        </div>
+                        <div class="guide-card-content">
+                            <p>치매안심센터에 등록된 치매환자 및 보호자를 대상으로 합니다.</p>
+                            <ul>
+                                <li>치매 진단을 받고 치매안심센터에 등록된 환자</li>
+                                <li>장기요양등급을 받은 치매환자</li>
+                                <li>뇌졸중 및 기타 신경계 질환으로 인지기능 저하가 있는 환자</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-card-header">
+                            <div class="guide-card-icon">📝</div>
+                            <h2>회원가입 및 인증</h2>
+                        </div>
+                        <div class="guide-card-content">
+                            <p>서비스 이용을 위해 회원가입이 필요합니다.</p>
+                            <ol>
+                                <li>회원가입 시 필요 정보를 입력합니다.</li>
+                                <li>환자 인증을 위한 증빙서류를 준비합니다.
+                                    <ul>
+                                        <li>치매 진단서 또는 소견서</li>
+                                        <li>장기요양인정서</li>
+                                        <li>신분증 사본(환자 및 보호자)</li>
+                                    </ul>
+                                </li>
+                                <li>서류 업로드 후 인증 승인을 기다립니다. (1~2일 소요)</li>
+                                <li>승인 완료 후 조호물품 신청이 가능합니다.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-card-header">
+                            <div class="guide-card-icon">🛒</div>
+                            <h2>조호물품 신청 방법</h2>
+                        </div>
+                        <div class="guide-card-content">
+                            <ol>
+                                <li>로그인 후 '조호물품 신청' 메뉴로 이동합니다.</li>
+                                <li>원하는 카테고리를 선택하여 필요한 물품을 찾습니다.</li>
+                                <li>물품 선택 후 '신청하기' 버튼을 클릭합니다.</li>
+                                <li>신청 양식에 배송 정보와 요청사항을 입력합니다.</li>
+                                <li>신청 완료 후 승인을 기다립니다. (일반적으로 1~3일 소요)</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-card-header">
+                            <div class="guide-card-icon">🔍</div>
+                            <h2>신청 상태 확인</h2>
+                        </div>
+                        <div class="guide-card-content">
+                            <p>'신청내역' 메뉴에서 현재 신청 상태를 확인할 수 있습니다.</p>
+                            <ul>
+                                <li><span class="status-label status-pending">승인대기</span> 신청이 접수되어 검토 중인 상태</li>
+                                <li><span class="status-label status-approved">승인완료</span> 신청이 승인되어 배송 준비 중인 상태</li>
+                                <li><span class="status-label status-delivering">배송중</span> 물품이 배송 중인 상태</li>
+                                <li><span class="status-label status-completed">배송완료</span> 물품 배송이 완료된 상태</li>
+                                <li><span class="status-label status-rejected">승인거부</span> 신청이 거부된 상태 (사유 확인 가능)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-card-header">
+                            <div class="guide-card-icon">🚚</div>
+                            <h2>배송 안내</h2>
+                        </div>
+                        <div class="guide-card-content">
+                            <ul>
+                                <li>승인 완료 후 평균 2~3일 내에 배송이 시작됩니다.</li>
+                                <li>배송은 택배사를 통해 진행되며, 운송장 번호로 조회가 가능합니다.</li>
+                                <li>도서산간 지역은 배송이 지연될 수 있습니다.</li>
+                                <li>배송 관련 문의는 고객센터로 연락 주시기 바랍니다.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-card-header">
+                            <div class="guide-card-icon">💬</div>
+                            <h2>문의 및 지원</h2>
+                        </div>
+                        <div class="guide-card-content">
+                            <p>서비스 이용 중 궁금한 점이나 문제가 있으시면 아래 연락처로 문의해 주세요.</p>
+                            <ul>
+                                <li><strong>전화</strong>: 02-123-4567 (평일 09:00 ~ 18:00)</li>
+                                <li><strong>이메일</strong>: support@dementia-center.kr</li>
+                                <li><strong>채팅상담</strong>: 홈페이지 우측 하단 '상담하기' 버튼</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="process-flow">
+                <h2>조호물품 신청 프로세스</h2>
+                <div class="process-flow-chart">
+                    <div class="process-step">
+                        <div class="process-icon">1</div>
+                        <div class="process-content">
+                            <h3>회원가입 및 인증</h3>
+                            <p>필요 정보 입력과 증빙서류 제출</p>
+                        </div>
+                    </div>
+                    <div class="process-arrow"></div>
+                    <div class="process-step">
+                        <div class="process-icon">2</div>
+                        <div class="process-content">
+                            <h3>물품 선택 및 신청</h3>
+                            <p>필요한 조호물품 신청</p>
+                        </div>
+                    </div>
+                    <div class="process-arrow"></div>
+                    <div class="process-step">
+                        <div class="process-icon">3</div>
+                        <div class="process-content">
+                            <h3>신청 검토 및 승인</h3>
+                            <p>담당자 검토 후 승인 진행</p>
+                        </div>
+                    </div>
+                    <div class="process-arrow"></div>
+                    <div class="process-step">
+                        <div class="process-icon">4</div>
+                        <div class="process-content">
+                            <h3>배송 진행</h3>
+                            <p>택배사를 통한 배송</p>
+                        </div>
+                    </div>
+                    <div class="process-arrow"></div>
+                    <div class="process-step">
+                        <div class="process-icon">5</div>
+                        <div class="process-content">
+                            <h3>수령 확인</h3>
+                            <p>물품 수령 후 확인</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="service-summary">
+                <div class="summary-title">
+                    <h2>서비스 이용 요약</h2>
+                    <p>치매안심센터 조호물품 신청 서비스를 더 쉽게 이용하세요</p>
+                </div>
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-icon">🏠</div>
+                        <h3>온라인 신청</h3>
+                        <p>직접 방문하지 않고 인터넷이나 모바일 앱으로 언제 어디서나 신청 가능합니다.</p>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">🚛</div>
+                        <h3>무료 배송</h3>
+                        <p>모든 조호물품은 지정한 주소로 무료로 배송됩니다. 부담 없이 신청하세요.</p>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">📱</div>
+                        <h3>실시간 배송 조회</h3>
+                        <p>신청 상태와 배송 현황을 실시간으로 확인할 수 있어 안심하고 기다릴 수 있습니다.</p>
+                    </div>
+                </div>
+                <a href="application.html" class="help-button">조호물품 신청하기</a>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

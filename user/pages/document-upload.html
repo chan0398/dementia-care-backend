@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>증빙서류 관리 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        .document-manager {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .document-section {
+            margin-bottom: 30px;
+        }
+        
+        .document-section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .document-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .document-item {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .document-item.approved {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .document-item.pending {
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .document-item.rejected {
+            border-left: 4px solid var(--error-color);
+        }
+        
+        .document-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .document-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .document-date {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 10px;
+        }
+        
+        .document-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-approved {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .status-rejected {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--error-color);
+        }
+        
+        .document-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .document-actions button {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        
+        .upload-section {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .document-upload {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .file-label:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .file-name {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        
+        .document-preview {
+            margin-top: 20px;
+        }
+        
+        .document-type-select {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .rejection-reason {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(244, 67, 54, 0.05);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="page-header">
+                <h1>증빙서류 관리</h1>
+                <p>치매환자 인증을 위한 증빙서류를 관리하실 수 있습니다.</p>
+            </section>
+
+            <section class="document-manager">
+                <div class="upload-section">
+                    <h2>새 증빙서류 업로드</h2>
+                    <p>치매 진단서, 소견서, 장기요양인정서 등 환자 인증을 위한 서류를 업로드해주세요.</p>
+                    
+                    <div class="document-type-select">
+                        <label for="documentType">서류 종류 선택</label>
+                        <select id="documentType" class="form-control">
+                            <option value="">서류 종류를 선택해주세요</option>
+                            <option value="diagnosis">치매 진단서</option>
+                            <option value="opinion">치매 소견서</option>
+                            <option value="longterm">장기요양인정서</option>
+                            <option value="id">신분증 사본</option>
+                            <option value="family">가족관계증명서</option>
+                            <option value="other">기타 증빙서류</option>
+                        </select>
+                    </div>
+                    
+                    <div class="document-upload">
+                        <input type="file" id="documentUpload" name="documentUpload" class="file-input">
+                        <label for="documentUpload" class="file-label">파일 선택</label>
+                        <span class="file-name">선택된 파일 없음</span>
+                    </div>
+                    
+                    <p class="input-hint">JPG, PNG, PDF 파일만 업로드 가능합니다. (최대 10MB)</p>
+                    
+                    <div class="document-preview" id="documentPreview">
+                        <!-- 업로드한 파일 미리보기 영역 -->
+                    </div>
+                    
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button type="button" class="btn-primary" id="uploadBtn">업로드</button>
+                        <button type="button" class="btn-secondary" id="cancelUploadBtn">취소</button>
+                    </div>
+                </div>
+                
+                <div class="document-section">
+                    <h2>등록된 증빙서류</h2>
+                    
+                    <div class="document-list">
+                        <!-- 승인된 서류 예시 -->
+                        <div class="document-item approved">
+                            <div class="document-icon">📄</div>
+                            <div class="document-name">치매 진단서.pdf</div>
+                            <div class="document-date">업로드: 2025-03-15</div>
+                            <div class="document-status status-approved">승인됨</div>
+                            <div class="document-actions">
+                                <button class="btn-secondary">보기</button>
+                                <button class="btn-secondary">다운로드</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 대기 중인 서류 예시 -->
+                        <div class="document-item pending">
+                            <div class="document-icon">📄</div>
+                            <div class="document-name">장기요양인정서.jpg</div>
+                            <div class="document-date">업로드: 2025-04-10</div>
+                            <div class="document-status status-pending">검토 중</div>
+                            <div class="document-actions">
+                                <button class="btn-secondary">보기</button>
+                                <button class="btn-secondary">삭제</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 거부된 서류 예시 -->
+                        <div class="document-item rejected">
+                            <div class="document-icon">📄</div>
+                            <div class="document-name">신분증사본.jpg</div>
+                            <div class="document-date">업로드: 2025-03-28</div>
+                            <div class="document-status status-rejected">반려됨</div>
+                            <div class="rejection-reason">
+                                <strong>반려 사유:</strong> 이미지가 선명하지 않습니다. 다시 촬영하여 업로드해주세요.
+                            </div>
+                            <div class="document-actions">
+                                <button class="btn-secondary">보기</button>
+                                <button class="btn-secondary">삭제</button>
+                                <button class="btn-primary">재업로드</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="document-section">
+                    <h2>필요한 증빙서류</h2>
+                    <p>조호물품 서비스 이용을 위해 아래 서류가 필요합니다. 모든 필수 서류를 업로드해주세요.</p>
+                    
+                    <div class="document-list">
+                        <div class="document-item">
+                            <div class="document-icon">📋</div>
+                            <div class="document-name">치매 진단서 또는 소견서</div>
+                            <div class="document-status status-approved">제출완료</div>
+                        </div>
+                        
+                        <div class="document-item">
+                            <div class="document-icon">📋</div>
+                            <div class="document-name">장기요양인정서</div>
+                            <div class="document-status status-pending">검토 중</div>
+                        </div>
+                        
+                        <div class="document-item">
+                            <div class="document-icon">📋</div>
+                            <div class="document-name">환자 신분증 사본</div>
+                            <div class="document-status status-rejected">반려됨</div>
+                        </div>
+                        
+                        <div class="document-item">
+                            <div class="document-icon">📋</div>
+                            <div class="document-name">가족관계증명서</div>
+                            <div class="document-status status-rejected">미제출</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="notice-box" style="margin-top: 30px;">
+                    <h3>인증 상태: <span class="status-pending">검토 중</span></h3>
+                    <p>모든 필수 서류가 승인되면 조호물품 신청 서비스를 이용하실 수 있습니다.</p>
+                    <p>반려된 서류는 재업로드해주시기 바랍니다.</p>
+                </div>
+</body>
+</html>

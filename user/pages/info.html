@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자주하는 질문 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 아코디언 스타일 */
+        .faq-container {
+            margin-bottom: 30px;
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .faq-question {
+            padding: 15px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .faq-question:after {
+            content: '+';
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .faq-question:after {
+            transform: rotate(45deg);
+        }
+        
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 0 20px 20px;
+            max-height: 500px;
+        }
+        
+        .faq-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 30px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="login.html">로그인</a>
+            <a href="register.html">회원가입</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="0"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+</header>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="page-header">
+                <h1>자주하는 질문</h1>
+                <p>조호물품 신청 서비스 이용 중 자주 묻는 질문들을 모았습니다.</p>
+            </section>
+
+            <section class="faq-section">
+                <div class="faq-filter">
+                    <button class="filter-button active" data-category="all">전체</button>
+                    <button class="filter-button" data-category="register">회원가입/인증</button>
+                    <button class="filter-button" data-category="application">신청방법</button>
+                    <button class="filter-button" data-category="delivery">배송</button>
+                    <button class="filter-button" data-category="product">물품안내</button>
+                    <button class="filter-button" data-category="system">시스템/기술</button>
+                </div>
+
+                <div class="faq-container">
+                    <!-- 회원가입/인증 카테고리 -->
+                    <div class="faq-item" data-category="register">
+                        <div class="faq-question">회원가입은 어떻게 하나요?</div>
+                        <div class="faq-answer">
+                            <p>회원가입은 홈페이지 상단의 '회원가입' 버튼을 클릭하여 진행할 수 있습니다. 기본 정보와 환자 정보를 입력하고, 필요한 증빙서류를 업로드하면 가입이 완료됩니다. 증빙서류 검토 후 서비스 이용이 가능합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="register">
+                        <div class="faq-question">인증에 필요한 서류는 무엇인가요?</div>
+                        <div class="faq-answer">
+                            <p>인증에 필요한 서류는 다음과 같습니다:</p>
+                            <ul>
+                                <li>치매 진단서 또는 소견서</li>
+                                <li>장기요양인정서 (있을 경우)</li>
+                                <li>환자 및 보호자의 신분증 사본</li>
+                                <li>가족관계증명서 (보호자가 가족일 경우)</li>
+                            </ul>
+                            <p>서류는 회원가입 시 또는 '내 정보 관리' 페이지에서 업로드할 수 있습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="register">
+                        <div class="faq-question">인증 승인은 얼마나 걸리나요?</div>
+                        <div class="faq-answer">
+                            <p>인증 승인은 보통 1~2일(영업일 기준) 내에 처리됩니다. 제출하신 서류에 문제가 없다면 빠르게 승인이 이루어집니다. 승인 결과는 회원가입 시 등록한 연락처나 이메일로 안내드립니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 신청방법 카테고리 -->
+                    <div class="faq-item" data-category="application">
+                        <div class="faq-question">조호물품은 어떻게 신청하나요?</div>
+                        <div class="faq-answer">
+                            <p>조호물품 신청은 다음과 같은 절차로 진행됩니다:</p>
+                            <ol>
+                                <li>로그인 후 '조호물품 신청' 메뉴로 이동</li>
+                                <li>필요한 카테고리 선택</li>
+                                <li>원하는 물품의 '신청하기' 버튼 클릭</li>
+                                <li>수량 및 배송지 정보 입력</li>
+                                <li>신청 완료</li>
+                            </ol>
+                            <p>신청 후 승인 과정을 거쳐 배송이 시작됩니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="application">
+                        <div class="faq-question">한 번에 얼마나 많은 물품을 신청할 수 있나요?</div>
+                        <div class="faq-answer">
+                            <p>각 물품별로 월 최대 수량이 정해져 있습니다. 기본적으로 동일 품목은 월 1회 신청 가능하며, 물품에 따라 최대 5개까지 신청할 수 있습니다. 자세한 수량 제한은 각 물품 상세 페이지에서 확인 가능합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="application">
+                        <div class="faq-question">신청 후 취소나 변경이 가능한가요?</div>
+                        <div class="faq-answer">
+                            <p>신청 상태가 '승인대기' 상태일 경우에만 취소나 변경이 가능합니다. '신청내역' 페이지에서 해당 신청 건을 선택하여 취소하거나 변경할 수 있습니다. 이미 '승인완료' 또는 '배송중' 상태인 경우에는 고객센터로 문의해 주시기 바랍니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 배송 카테고리 -->
+                    <div class="faq-item" data-category="delivery">
+                        <div class="faq-question">배송은 얼마나 걸리나요?</div>
+                        <div class="faq-answer">
+                            <p>승인 완료 후 평균 2~3일 내에 배송이 시작되며, 배송 시작 후 1~2일 내에 물품을 받으실 수 있습니다. 도서산간 지역은 3~5일이 소요될 수 있습니다. 배송 상태는 '신청내역' 페이지에서 실시간으로 확인 가능합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="delivery">
+                        <div class="faq-question">배송 조회는 어떻게 하나요?</div>
+                        <div class="faq-answer">
+                            <p>배송 조회는 다음과 같은 방법으로 가능합니다:</p>
+                            <ol>
+                                <li>'신청내역' 메뉴 접속</li>
+                                <li>해당 물품의 '상세보기' 버튼 클릭</li>
+                                <li>배송중 상태인 경우 배송조회 정보 확인 가능</li>
+                            </ol>
+                            <p>운송장 번호로 택배사 홈페이지에서도 조회가 가능합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="delivery">
+                        <div class="faq-question">배송 중 문제가 발생했을 때는 어떻게 하나요?</div>
+                        <div class="faq-answer">
+                            <p>배송 중 물품 분실, 파손 등의 문제가 발생한 경우 고객센터(02-123-4567)로 연락 주시기 바랍니다. 접수 후 확인 과정을 거쳐 빠르게 조치해 드립니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 물품안내 카테고리 -->
+                    <div class="faq-item" data-category="product">
+                        <div class="faq-question">어떤 종류의 조호물품을 제공하나요?</div>
+                        <div class="faq-answer">
+                            <p>다음과 같은 카테고리의 조호물품을 제공하고 있습니다:</p>
+                            <ul>
+                                <li>위생용품: 기저귀, 물티슈, 손소독제 등</li>
+                                <li>생활용품: 방수매트, 식사용 에이프런, 미끄럼방지 매트 등</li>
+                                <li>식사용품: 식사보조도구, 특수 식기류 등</li>
+                                <li>안전용품: 낙상방지 보호대, 안전바 등</li>
+                                <li>재활용품: 보행보조기, 지팡이 등</li>
+                            </ul>
+                            <p>자세한 물품 목록은 '조호물품 신청' 페이지에서 확인 가능합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="product">
+                        <div class="faq-question">물품 품질에 문제가 있을 경우 교환이 가능한가요?</div>
+                        <div class="faq-answer">
+                            <p>물품 수령 후 7일 이내에 품질 문제가 발견될 경우, 고객센터로 연락 주시면 교환 처리가 가능합니다. 단, 사용 흔적이 있거나 고의적 훼손의 경우에는 교환이 어려울 수 있습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="product">
+                        <div class="faq-question">물품 지원은 완전 무료인가요?</div>
+                        <div class="faq-answer">
+                            <p>네, 조호물품은 치매안심센터에 등록된 환자분들께 무료로 제공됩니다. 다만, 월별/품목별로 지원 한도가 있으니 참고해 주시기 바랍니다. 배송비도 무료입니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 시스템/기술 카테고리 -->
+                    <div class="faq-item" data-category="system">
+                        <div class="faq-question">비밀번호를 잊어버렸어요. 어떻게 해야 하나요?</div>
+                        <div class="faq-answer">
+                            <p>로그인 페이지에서 '비밀번호 찾기' 버튼을 클릭하신 후, 가입 시 등록한 이메일이나 휴대폰 번호로 본인 인증을 진행하시면 비밀번호를 재설정하실 수 있습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="system">
+                        <div class="faq-question">스마트폰 앱이 있나요?</div>
+                        <div class="faq-answer">
+                            <p>네, 안드로이드와 iOS 모두 지원하는 모바일 앱이 있습니다. 각 앱스토어에서 '치매안심센터 조호물품'을 검색하시면 다운로드 가능합니다. 모바일 앱을 통해 간편하게 물품 신청 및 배송 조회가 가능합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-category="system">
+                        <div class="faq-question">웹사이트 이용이 어려운데 대안이 있나요?</div>
+                        <div class="faq-answer">
+                            <p>웹사이트 이용이 어려우신 분들은 고객센터(02-123-4567)로 전화하시면 상담원의 도움을 받아 조호물품을 신청하실 수 있습니다. 또한, 가까운 치매안심센터를 직접 방문하셔도 됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="contact-info">
+                <h2>더 궁금한 점이 있으신가요?</h2>
+                <p>문의사항은 고객센터로 연락해 주세요.</p>
+                <div class="contact-methods">
+                    <div class="contact-method">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-detail">
+                            <h3>전화 문의</h3>
+                            <p>02-123-4567</p>
+                            <p>평일 09:00 ~ 18:00</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-detail">
+                            <h3>이메일 문의</h3>
+                            <p>support@dementia-center.kr</p>
+                            <p>24시간 접수 가능</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <div class="contact-icon">💬</div>
+                        <div class="contact-detail">
+                            <h3>채팅 문의</h3>
+                            <p>홈페이지 우측 하단 상담버튼</p>
+                            <p>평일 09:00 ~ 20:00</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // FAQ 아코디언 기능
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const faqItem = this.parentElement;
+                    
+                    // 현재 항목 토글
+                    faqItem.classList.toggle('active');
+                    
+                    // 다른 항목 닫기 (선택사항)
+                    // document.querySelectorAll('.faq-item').forEach(item => {
+                    //     if (item !== faqItem) {
+                    //         item.classList.remove('active');
+                    //     }
+                    // });
+                });
+            });
+            
+            // 카테고리 필터링
+            const filterButtons = document.querySelectorAll('.filter-button');
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    
+                    // 버튼 활성화 상태 변경
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 항목 필터링
+                    faqItems.forEach(item => {
+                        if (category === 'all' || item.getAttribute('data-category') === category) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

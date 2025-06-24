@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -21,10 +22,12 @@ const db = mysql.createPool({
   timeout: 60000
 });
 
+const path = require('path'); 
+
 // 미들웨어 설정
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static(path.join(__dirname, '../user')));
 
 // 기본 라우트
 app.get('/', (req, res) => {

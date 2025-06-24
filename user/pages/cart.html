@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장바구니 - 치매안심센터</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        /* 장바구니 페이지 스타일 */
+        .cart-container {
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .cart-title {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .cart-count {
+            font-size: 16px;
+            color: var(--light-text);
+        }
+        
+        .cart-items {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .cart-item-details {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-description {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-limit {
+            font-size: 12px;
+            color: #E65100;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .quantity-decrease, .quantity-increase {
+            width: 36px;
+            height: 36px;
+            background-color: #f0f0f0;
+            border: none;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* 숫자 입력 화살표 제거 - 모든 브라우저 호환 */
+        /* Chrome, Safari, Edge, Opera에서 화살표 제거 */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox에서 화살표 제거 */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        .quantity-control input {
+            width: 40px;
+            height: 36px;
+            border: none;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            text-align: center;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn-remove {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn-remove:hover {
+            color: #F44336;
+        }
+        
+        .cart-summary {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        .summary-items {
+            margin-bottom: 20px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 18px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .summary-note {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .cart-actions button {
+            flex: 1;
+            padding: 15px 0;
+            font-size: 16px;
+        }
+        
+        /* 빈 장바구니 스타일 */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .empty-cart img {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-cart h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .empty-cart p {
+            color: #777;
+            margin-bottom: 30px;
+        }
+        
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .cart-item-image {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .cart-item-quantity {
+                margin-top: 15px;
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .cart-item-actions {
+                align-self: flex-end;
+            }
+            
+            .cart-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+<header>
+    <div class="header-top">
+        <div class="utility-menu">
+            <a href="logout.html">로그아웃</a>
+            <a href="customer-service.html">고객센터</a>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="logo">
+            <a href="../index.html"><img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/150x50?text=로고'"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="필요하신 조호물품을 검색해보세요">
+            <button type="submit">검색하기</button>
+        </div>
+        <div class="header-icons">
+            <a href="mypage.html" class="icon my-page"><span>신청내역</span></a>
+            <a href="myinfo.html" class="icon user"><span>내정보</span></a>
+            <a href="cart.html" class="icon cart" data-count="3"><span>장바구니</span></a>
+        </div>
+    </div>
+    <!-- 네비게이션 메뉴 -->
+    <nav>
+        <ul class="main-nav">
+            <li><a href="application.html">조호물품 신청</a></li>
+            <li><a href="guide.html">이용안내</a></li>
+            <li><a href="info.html">자주하는 질문</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+        </ul>
+    </nav>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main>
+            <section class="page-header">
+                <h1>장바구니</h1>
+                <p>신청할 조호물품을 모아두고 한 번에 신청하실 수 있습니다.</p>
+            </section>
+
+            <section class="cart-container">
+                <!-- 장바구니 상품 있을 때 -->
+                <div id="filled-cart">
+                    <div class="cart-header">
+                        <div class="cart-title">장바구니 물품</div>
+                        <div class="cart-count">총 3개 물품</div>
+                    </div>
+                    
+                    <div class="cart-items">
+                        <!-- 장바구니 아이템 1 -->
+                        <div class="cart-item">
+                            <div class="cart-item-image">
+                                <img src="../images/product1.jpg" alt="성인용 기저귀" onerror="this.src='https://via.placeholder.com/80x80?text=성인용기저귀'">
+                            </div>
+                            <div class="cart-item-details">
+                                <div class="cart-item-name">성인용 기저귀</div>
+                                <div class="cart-item-description">중형 (20매)</div>
+                                <div class="cart-item-limit">최대 신청 가능: 2개</div>
+                            </div>
+                            <div class="cart-item-quantity">
+                                <div class="quantity-control">
+                                    <button type="button" class="quantity-decrease">-</button>
+                                    <input type="number" value="1" min="1" max="2" readonly>
+                                    <button type="button" class="quantity-increase">+</button>
+                                </div>
+                            </div>
+                            <div class="cart-item-actions">
+                                <button type="button" class="btn-remove">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                    </svg>
+                                    삭제
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 장바구니 아이템 2 -->
+                        <div class="cart-item">
+                            <div class="cart-item-image">
+                                <img src="../images/product2.jpg" alt="조호용 물티슈" onerror="this.src='https://via.placeholder.com/80x80?text=조호용물티슈'">
+                            </div>
+                            <div class="cart-item-details">
+                                <div class="cart-item-name">조호용 물티슈</div>
+                                <div class="cart-item-description">대형 (100매)</div>
+                                <div class="cart-item-limit">최대 신청 가능: 3개</div>
+                            </div>
+                            <div class="cart-item-quantity">
+                                <div class="quantity-control">
+                                    <button type="button" class="quantity-decrease">-</button>
+                                    <input type="number" value="1" min="1" max="3" readonly>
+                                    <button type="button" class="quantity-increase">+</button>
+                                </div>
+                            </div>
+                            <div class="cart-item-actions">
+                                <button type="button" class="btn-remove">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                    </svg>
+                                    삭제
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 장바구니 아이템 3 -->
+                        <div class="cart-item">
+                            <div class="cart-item-image">
+                                <img src="../images/product3.jpg" alt="방수 매트" onerror="this.src='https://via.placeholder.com/80x80?text=방수매트'">
+                            </div>
+                            <div class="cart-item-details">
+                                <div class="cart-item-name">방수 매트</div>
+                                <div class="cart-item-description">침대용 (17매)</div>
+                                <div class="cart-item-limit">최대 신청 가능: 2개</div>
+                            </div>
+                            <div class="cart-item-quantity">
+                                <div class="quantity-control">
+                                    <button type="button" class="quantity-decrease">-</button>
+                                    <input type="number" value="1" min="1" max="2" readonly>
+                                    <button type="button" class="quantity-increase">+</button>
+                                </div>
+                            </div>
+                            <div class="cart-item-actions">
+                                <button type="button" class="btn-remove">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                    </svg>
+                                    삭제
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <div class="summary-title">신청 물품 요약</div>
+                        <div class="summary-items">
+                            <div class="summary-item">
+                                <div class="item-name">성인용 기저귀 (중형)</div>
+                                <div class="item-quantity">1개</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="item-name">조호용 물티슈 (대형)</div>
+                                <div class="item-quantity">1개</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="item-name">방수 매트 (침대용)</div>
+                                <div class="item-quantity">1개</div>
+                            </div>
+                        </div>
+                        <div class="summary-total">
+                            <div class="total-label">총 신청 물품 수량</div>
+                            <div class="total-value">3개</div>
+                        </div>
+                        <div class="summary-note">
+                            * 조호물품은 무료로 제공되며, 상품별 월간 최대 신청 가능 수량이 있습니다.<br>
+                            * 신청하신 물품은 담당자 승인 후 배송이 시작됩니다.
+                        </div>
+                    </div>
+                    
+                    <div class="cart-actions">
+                        <button type="button" class="btn-secondary" onclick="window.location.href='application.html'">쇼핑 계속하기</button>
+                        <button type="button" class="btn-primary" id="checkoutBtn">신청하기</button>
+                    </div>
+                </div>
+                
+                <!-- 장바구니 비어있을 때 -->
+                <div id="empty-cart" class="empty-cart" style="display: none;">
+                    <img src="../images/empty-cart.png" alt="빈 장바구니" onerror="this.src='https://via.placeholder.com/120x120?text=빈+장바구니'">
+                    <h3>장바구니가 비어있습니다</h3>
+                    <p>필요한 조호물품을 장바구니에 담아보세요!</p>
+                    <a href="application.html" class="btn-primary">조호물품 보러가기</a>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 영역 -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo.png" alt="치매안심센터 로고" onerror="this.src='https://via.placeholder.com/120x40?text=로고'">
+                </div>
+                <div class="footer-info">
+                    <p>치매안심센터 | 주소: 서울특별시 종로구 종로1길 1 | 대표전화: 02-123-4567</p>
+                    <p>Copyright © 2025 치매안심센터 조호물품 신청 서비스. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">개인정보처리방침</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">사이트맵</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 수량 조절 기능
+            const decreaseButtons = document.querySelectorAll('.quantity-decrease');
+            const increaseButtons = document.querySelectorAll('.quantity-increase');
+            
+            decreaseButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const input = this.nextElementSibling;
+                    let value = parseInt(input.value);
+                    if (value > 1) {
+                        input.value = value - 1;
+                        updateCartSummary();
+                    }
+                });
+            });
+            
+            increaseButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const input = this.previousElementSibling;
+                    let value = parseInt(input.value);
+                    let maxValue = parseInt(input.getAttribute('max') || 99);
+                    
+                    if (value < maxValue) {
+                        input.value = value + 1;
+                        updateCartSummary();
+                    } else {
+                        alert(`최대 ${maxValue}개까지 신청 가능합니다.`);
+                    }
+                });
+            });
+            
+            // 삭제 버튼 기능
+            const removeButtons = document.querySelectorAll('.btn-remove');
+            
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const cartItem = this.closest('.cart-item');
+                    const itemName = cartItem.querySelector('.cart-item-name').textContent;
+                    
+                    // 삭제 확인
+                    if (confirm(`장바구니에서 '${itemName}'을(를) 삭제하시겠습니까?`)) {
+                        cartItem.remove();
+                        updateCartSummary();
+                        
+                        // 장바구니가 비었는지 확인
+                        const remainingItems = document.querySelectorAll('.cart-item');
+                        if (remainingItems.length === 0) {
+                            document.getElementById('filled-cart').style.display = 'none';
+                            document.getElementById('empty-cart').style.display = 'block';
+                        }
+                    }
+                });
+            });
+            
+            // 장바구니 요약 업데이트
+            function updateCartSummary() {
+                const cartItems = document.querySelectorAll('.cart-item');
+                const summaryItems = document.querySelector('.summary-items');
+                const totalValue = document.querySelector('.total-value');
+                const cartCount = document.querySelector('.cart-count');
+                
+                // 요약 항목 초기화
+                summaryItems.innerHTML = '';
+                
+                let totalQuantity = 0;
+                
+                // 각 아이템 정보 추가
+                cartItems.forEach(item => {
+                    const name = item.querySelector('.cart-item-name').textContent;
+                    const description = item.querySelector('.cart-item-description').textContent.replace(/[()]/g, '');
+                    const quantity = parseInt(item.querySelector('.quantity-control input').value);
+                    
+                    totalQuantity += quantity;
+                    
+                    const summaryItem = document.createElement('div');
+                    summaryItem.className = 'summary-item';
+                    summaryItem.innerHTML = `
+                        <div class="item-name">${name} (${description})</div>
+                        <div class="item-quantity">${quantity}개</div>
+                    `;
+                    
+                    summaryItems.appendChild(summaryItem);
+                });
+                
+                // 총 수량 업데이트
+                totalValue.textContent = `${totalQuantity}개`;
+                cartCount.textContent = `총 ${cartItems.length}개 물품`;
+                
+                // 헤더의 장바구니 아이콘 개수 업데이트
+                const cartIcon = document.querySelector('.icon.cart');
+                if (cartIcon) {
+                    cartIcon.setAttribute('data-count', cartItems.length);
+                }
+            }
+            
+            // 신청하기 버튼
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function() {
+                    // 주문 처리 로직 (실제 구현 시)
+                    // 여기서는 임의로 주문 완료 메시지 표시
+                    alert('신청이 완료되었습니다. 신청내역 페이지로 이동합니다.');
+                    window.location.href = 'mypage.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
