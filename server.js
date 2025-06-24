@@ -534,3 +534,153 @@ app.post('/api/admin/approve-user', (req, res) => {
       });
     });
 });
+
+// 관리자용 전체 사용자 조회
+app.get('/api/admin/users', (req, res) => {
+  const promiseDb = db.promise();
+  
+  promiseDb.query('SELECT * FROM users ORDER BY created_at DESC')
+    .then(([results]) => {
+      res.json({
+        success: true,
+        message: '사용자 목록 조회 성공',
+        data: results,
+        total_count: results.length,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 사용자 목록 조회 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: '사용자 목록 조회 실패',
+        details: err.message,
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 관리자용 전체 신청 조회
+app.get('/api/admin/applications', (req, res) => {
+  const promiseDb = db.promise();
+  
+  const query = `
+    SELECT 
+      a.*,
+      p.name as product_name,
+      p.description as product_description,
+      p.category as product_category,
+      u.name as user_name,
+      u.email as user_email,
+      u.phone as user_phone
+    FROM applications a
+    JOIN products p ON a.product_id = p.id
+    JOIN users u ON a.user_id = u.id
+    ORDER BY a.applied_at DESC
+  `;
+  
+  promiseDb.query(query)
+    .then(([results]) => {
+      res.json({
+        success: true,
+        message: '신청 목록 조회 성공',
+        data: results,
+        total_count: results.length,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 신청 목록 조회 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: '신청 목록 조회 실패',
+        details: err.message,
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 신청 승인/거절 API
+app.post('/api/admin/approve-application', (req, res) => {
+  const { application_id, status } = req.body;
+  const promiseDb = db.promise();
+  
+  if (!application_id || !status) {
+    return res.status(400).json({
+      success: false,
+      error: '신청 ID와 상태가 필요합니다',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  const updateData = { status: status };
+  if (status === 'approved') {
+    updateData.approved_at = new Date();
+  }
+  
+  promiseDb.query(
+    `UPDATE applications SET status = ?, approved_at = ? WHERE id = ?`,
+    [status, updateData.approved_at || null, application_id]
+  )
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        throw new Error('존재하지 않는 신청입니다');
+      }
+      
+      res.json({
+        success: true,
+        message: `✅ 신청이 ${status === 'approved' ? '승인' : '거절'}되었습니다`,
+        application_id: application_id,
+        new_status: status,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 신청 승인 처리 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: err.message || '신청 승인 처리 실패',
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 배송 처리 API
+app.post('/api/admin/ship-application', (req, res) => {
+  const { application_id, tracking_number } = req.body;
+  const promiseDb = db.promise();
+  
+  if (!application_id || !tracking_number) {
+    return res.status(400).json({
+      success: false,
+      error: '신청 ID와 운송장 번호가 필요합니다',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  promiseDb.query(
+    `UPDATE applications SET status = 'shipped', tracking_number = ?, shipped_at = NOW() WHERE id = ? AND status = 'approved'`,
+    [tracking_number, application_id]
+  )
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        throw new Error('승인된 신청만 배송 처리할 수 있습니다');
+      }
+        
+      res.json({
+        success: true,
+        message: '✅ 배송 처리가 완료되었습니다',
+        application_id: application_id,
+        tracking_number: tracking_number,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 배송 처리 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: err.message || '배송 처리 실패',
+        timestamp: new Date().toISOString()
+      });
+    });
+});

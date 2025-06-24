@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - 치매안심센터</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .admin-header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .admin-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .admin-section h2 { margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .user-item, .application-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        .user-item.pending { border-left: 4px solid #ffc107; }
+        .user-item.approved { border-left: 4px solid #28a745; }
+        .user-item.rejected { border-left: 4px solid #dc3545; }
+        .application-item.pending { border-left: 4px solid #ffc107; }
+        .application-item.approved { border-left: 4px solid #28a745; }
+        .application-item.rejected { border-left: 4px solid #dc3545; }
+        .application-item.shipped { border-left: 4px solid #17a2b8; }
+        .application-item.delivered { border-left: 4px solid #6f42c1; }
+        .info-row { display: flex; margin-bottom: 8px; }
+        .info-label { font-weight: bold; width: 120px; color: #666; }
+        .info-value { flex: 1; }
+        .action-buttons { margin-top: 15px; }
+        .btn { padding: 8px 16px; margin-right: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-approve { background: #28a745; color: white; }
+        .btn-reject { background: #dc3545; color: white; }
+        .btn-ship { background: #17a2b8; color: white; }
+        .btn:hover { opacity: 0.8; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; }
+        .stat-number { font-size: 24px; font-weight: bold; }
+        .stat-label { margin-top: 5px; opacity: 0.9; }
+        .refresh-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1>🏥 치매안심센터 관리자 페이지</h1>
+        <p>사용자 승인 및 신청 관리</p>
+        <button class="refresh-btn" onclick="loadAllData()">🔄 새로고침</button>
+    </div>
+
+    <!-- 통계 카드 -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalUsers">0</div>
+            <div class="stat-label">총 사용자</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="pendingUsers">0</div>
+            <div class="stat-label">승인 대기 사용자</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="totalApplications">0</div>
+            <div class="stat-label">총 신청</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="pendingApplications">0</div>
+            <div class="stat-label">승인 대기 신청</div>
+        </div>
+    </div>
+
+    <!-- 사용자 승인 섹션 -->
+    <div class="admin-section">
+        <h2>👥 사용자 승인 관리</h2>
+        <div id="usersList"></div>
+    </div>
+
+    <!-- 신청 승인 섹션 -->
+    <div class="admin-section">
+        <h2>📦 조호물품 신청 관리</h2>
+        <div id="applicationsList"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let users = [];
+        let applications = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+        });
+
+        // 모든 데이터 로드
+        async function loadAllData() {
+            await Promise.all([
+                loadUsers(),
+                loadApplications()
+            ]);
+            updateStats();
+        }
+
+        // 사용자 목록 로드
+        async function loadUsers() {
+            try {
+                const result = await apiCall('/api/admin/users');
+                if (result.success) {
+                    users = result.data;
+                    displayUsers(users);
+                }
+            } catch (error) {
+                console.error('사용자 목록 로드 에러:', error);
+            }
+        }
+
+        // 신청 목록 로드
+        async function loadApplications() {
+            try {
+                const result = await apiCall('/api/admin/applications');
+                if (result.success) {
+                    applications = result.data;
+                    displayApplications(applications);
+                }
+            } catch (error) {
+                console.error('신청 목록 로드 에러:', error);
+            }
+        }
+
+        // 사용자 목록 표시
+        function displayUsers(userList) {
+            const usersList = document.getElementById('usersList');
+            
+            if (userList.length === 0) {
+                usersList.innerHTML = '<p>등록된 사용자가 없습니다.</p>';
+                return;
+            }
+
+            usersList.innerHTML = userList.map(user => `
+                <div class="user-item ${user.status}">
+                    <div class="info-row">
+                        <span class="info-label">이름:</span>
+                        <span class="info-value">${user.name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">이메일:</span>
+                        <span class="info-value">${user.email}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">전화번호:</span>
+                        <span class="info-value">${user.phone}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">사용자 타입:</span>
+                        <span class="info-value">${user.user_type === 'caregiver' ? '보호자' : '환자'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">가입일:</span>
+                        <span class="info-value">${formatDate(user.created_at)}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">상태:</span>
+                        <span class="info-value">${getStatusText(user.status)}</span>
+                    </div>
+                    ${user.status === 'pending' ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-approve" onclick="approveUser(${user.id}, 'approve')">승인</button>
+                            <button class="btn btn-reject" onclick="approveUser(${user.id}, 'reject')">거절</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 신청 목록 표시
+        function displayApplications(applicationList) {
+            const applicationsList = document.getElementById('applicationsList');
+            
+            if (applicationList.length === 0) {
+                applicationsList.innerHTML = '<p>신청 내역이 없습니다.</p>';
+                return;
+            }
+
+            applicationsList.innerHTML = applicationList.map(app => `
+                <div class="application-item ${app.status}">
+                    <div class="info-row">
+                        <span class="info-label">신청자:</span>
+                        <span class="info-value">${app.user_name} (${app.user_email})</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">상품:</span>
+                        <span class="info-value">${app.product_name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">수량:</span>
+                        <span class="info-value">${app.quantity}개</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">배송주소:</span>
+                        <span class="info-value">${app.delivery_address}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">신청일:</span>
+                        <span class="info-value">${formatDate(app.applied_at)}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">상태:</span>
+                        <span class="info-value">${getStatusText(app.status)}</span>
+                    </div>
+                    ${app.request_note ? `
+                        <div class="info-row">
+                            <span class="info-label">요청사항:</span>
+                            <span class="info-value">${app.request_note}</span>
+                        </div>
+                    ` : ''}
+                    ${app.status === 'pending' ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-approve" onclick="approveApplication(${app.id}, 'approved')">승인</button>
+                            <button class="btn btn-reject" onclick="approveApplication(${app.id}, 'rejected')">거절</button>
+                        </div>
+                    ` : ''}
+                    ${app.status === 'approved' ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-ship" onclick="shipApplication(${app.id})">배송 처리</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('pendingUsers').textContent = users.filter(u => u.status === 'pending').length;
+            document.getElementById('totalApplications').textContent = applications.length;
+            document.getElementById('pendingApplications').textContent = applications.filter(a => a.status === 'pending').length;
+        }
+
+        // 사용자 승인/거절
+        async function approveUser(userId, action) {
+            try {
+                const result = await apiCall('/api/admin/approve-user', 'POST', {
+                    user_id: userId,
+                    action: action
+                });
+                
+                if (result.success) {
+                    showSuccess(result.message);
+                    loadUsers();
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // 신청 승인/거절
+        async function approveApplication(applicationId, status) {
+            try {
+                const result = await apiCall('/api/admin/approve-application', 'POST', {
+                    application_id: applicationId,
+                    status: status
+                });
+                
+                if (result.success) {
+                    showSuccess(result.message);
+                    loadApplications();
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // 배송 처리
+        async function shipApplication(applicationId) {
+            const trackingNumber = prompt('운송장 번호를 입력하세요:', 'TR' + Date.now());
+            if (trackingNumber) {
+                try {
+                    const result = await apiCall('/api/admin/ship-application', 'POST', {
+                        application_id: applicationId,
+                        tracking_number: trackingNumber
+                    });
+                    
+                    if (result.success) {
+                        showSuccess(result.message);
+                        loadApplications();
+                    }
+                } catch (error) {
+                    showError(error.message);
+                }
+            }
+        }
+
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '승인 대기',
+                'approved': '승인 완료',
+                'rejected': '승인 거절',
+                'shipped': '배송 중',
+                'delivered': '배송 완료'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 날짜 포맷
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>
