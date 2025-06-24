@@ -383,11 +383,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     user_type: formData.get('relationship') === 'self' ? 'patient' : 'caregiver'
                 };
                 
-                // 비밀번호 확인
-                const confirmPassword = formData.get('confirmPassword');
-                if (userData.password !== confirmPassword) {
-                    throw new Error('비밀번호가 일치하지 않습니다.');
-                }
+                // 비밀번호 확인 (여러 가능한 이름으로 시도)
+const confirmPassword = formData.get('confirmPassword') ||
+                        formData.get('passwordConfirm') ||
+                        formData.get('password_confirm');
+
+console.log('입력된 비밀번호:', userData.password);
+console.log('확인 비밀번호:', confirmPassword);
+
+if (userData.password !== confirmPassword) {
+    throw new Error('비밀번호가 일치하지 않습니다.');
+}
                 
                 // 필수 약관 동의 확인
                 const ageAgreement = formData.get('ageAgreement');
