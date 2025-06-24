@@ -301,3 +301,236 @@ app.get('/api/products', (req, res) => {
       });
     });
 });
+
+// 회원가입 API
+app.post('/api/auth/register', (req, res) => {
+  const { email, password, name, phone, address, user_type } = req.body;
+  const promiseDb = db.promise();
+  
+  // 입력 검증
+  if (!email || !password || !name || !phone) {
+    return res.status(400).json({
+      success: false,
+      error: '필수 정보가 누락되었습니다',
+      required_fields: ['email', 'password', 'name', 'phone'],
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  // 이메일 중복 확인 후 사용자 등록
+  promiseDb.query('SELECT id FROM users WHERE email = ?', [email])
+    .then(([existing]) => {
+      if (existing.length > 0) {
+        throw new Error('이미 등록된 이메일입니다');
+      }
+      
+      // 새 사용자 등록
+      return promiseDb.query(
+        'INSERT INTO users (email, password, name, phone, address, user_type) VALUES (?, ?, ?, ?, ?, ?)',
+        [email, password, name, phone, address || '', user_type || 'caregiver']
+      );
+    })
+    .then(([result]) => {
+      res.json({
+        success: true,
+        message: '✅ 회원가입이 완료되었습니다!',
+        user_id: result.insertId,
+        status: 'pending_approval',
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 회원가입 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: err.message || '회원가입 처리 실패',
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 로그인 API (간단 버전)
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  const promiseDb = db.promise();
+  
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      error: '이메일과 비밀번호를 입력해주세요',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  promiseDb.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password])
+    .then(([users]) => {
+      if (users.length === 0) {
+        throw new Error('이메일 또는 비밀번호가 잘못되었습니다');
+      }
+      
+      const user = users[0];
+      
+      if (user.status !== 'approved') {
+        throw new Error('계정이 아직 승인되지 않았습니다. 관리자 승인을 기다려주세요.');
+      }
+      
+      res.json({
+        success: true,
+        message: '✅ 로그인 성공!',
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          user_type: user.user_type,
+          status: user.status
+        },
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 로그인 에러:', err);
+      res.status(401).json({
+        success: false,
+        error: err.message || '로그인 실패',
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 물품 신청 API
+app.post('/api/applications', (req, res) => {
+  const { user_id, product_id, quantity, delivery_address, request_note } = req.body;
+  const promiseDb = db.promise();
+  
+  if (!user_id || !product_id || !quantity || !delivery_address) {
+    return res.status(400).json({
+      success: false,
+      error: '필수 정보가 누락되었습니다',
+      required_fields: ['user_id', 'product_id', 'quantity', 'delivery_address'],
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  // 사용자와 상품 정보 확인 후 신청 처리
+  Promise.all([
+    promiseDb.query('SELECT * FROM users WHERE id = ? AND status = "approved"', [user_id]),
+    promiseDb.query('SELECT * FROM products WHERE id = ? AND is_active = TRUE', [product_id])
+  ])
+    .then(([[users], [products]]) => {
+      if (users.length === 0) {
+        throw new Error('승인된 사용자가 아닙니다');
+      }
+      if (products.length === 0) {
+        throw new Error('존재하지 않는 상품입니다');
+      }
+      
+      const product = products[0];
+      if (quantity > product.max_quantity_per_month) {
+        throw new Error(`최대 신청 가능 수량: ${product.max_quantity_per_month}개`);
+      }
+      
+      // 신청 내역 저장
+      return promiseDb.query(
+        'INSERT INTO applications (user_id, product_id, quantity, delivery_address, request_note) VALUES (?, ?, ?, ?, ?)',
+        [user_id, product_id, quantity, delivery_address, request_note || '']
+      );
+    })
+    .then(([result]) => {
+      res.json({
+        success: true,
+        message: '✅ 조호물품 신청이 완료되었습니다!',
+        application_id: result.insertId,
+        status: 'pending',
+        message_detail: '담당자 검토 후 승인 처리됩니다.',
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 신청 처리 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: err.message || '신청 처리 실패',
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 내 신청 내역 조회 API
+app.get('/api/applications/my/:user_id', (req, res) => {
+  const { user_id } = req.params;
+  const promiseDb = db.promise();
+  
+  const query = `
+    SELECT 
+      a.*,
+      p.name as product_name,
+      p.description as product_description,
+      p.category as product_category,
+      u.name as user_name,
+      u.email as user_email
+    FROM applications a
+    JOIN products p ON a.product_id = p.id
+    JOIN users u ON a.user_id = u.id
+    WHERE a.user_id = ?
+    ORDER BY a.applied_at DESC
+  `;
+  
+  promiseDb.query(query, [user_id])
+    .then(([results]) => {
+      res.json({
+        success: true,
+        message: '신청 내역 조회 성공',
+        data: results,
+        total_count: results.length,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 신청 내역 조회 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: '신청 내역 조회 실패',
+        details: err.message,
+        timestamp: new Date().toISOString()
+      });
+    });
+});
+
+// 관리자용 사용자 승인 API
+app.post('/api/admin/approve-user', (req, res) => {
+  const { user_id, action } = req.body; // action: 'approve' or 'reject'
+  const promiseDb = db.promise();
+  
+  if (!user_id || !action) {
+    return res.status(400).json({
+      success: false,
+      error: '사용자 ID와 처리 액션이 필요합니다',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  const newStatus = action === 'approve' ? 'approved' : 'rejected';
+  
+  promiseDb.query('UPDATE users SET status = ? WHERE id = ?', [newStatus, user_id])
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        throw new Error('존재하지 않는 사용자입니다');
+      }
+      
+      res.json({
+        success: true,
+        message: `✅ 사용자가 ${action === 'approve' ? '승인' : '거절'}되었습니다`,
+        user_id: user_id,
+        new_status: newStatus,
+        timestamp: new Date().toISOString()
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 사용자 승인 처리 에러:', err);
+      res.status(500).json({
+        success: false,
+        error: err.message || '사용자 승인 처리 실패',
+        timestamp: new Date().toISOString()
+      });
+    });
+});
