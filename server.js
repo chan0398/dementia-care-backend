@@ -25,7 +25,7 @@ const db = mysql.createPool({
 // 미들웨어 설정
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../user')));
+app.use(express.static('.'));
 
 // 기본 라우트
 app.get('/', (req, res) => {
