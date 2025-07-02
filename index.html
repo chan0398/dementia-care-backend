@@ -534,169 +534,75 @@
 <script src="js/api.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('메인 페이지 로드 시작');
+    
     // 사용자 정보 로드
-    loadUserFromStorage();
+    if (typeof loadUserFromStorage === 'function') {
+        loadUserFromStorage();
+    }
     
     // 헤더 업데이트
     updateMainPageHeader();
     
-    // 인기 조호물품 로드
-    loadPopularProducts();
-    
     // 메인 페이지 헤더 업데이트
     function updateMainPageHeader() {
-        const utilityMenu = document.querySelector('.utility-menu');
-        if (utilityMenu) {
-            if (currentUser) {
-                utilityMenu.innerHTML = `
-                    <span style="color: #007bff; font-weight: bold;">
-                        안녕하세요, ${currentUser.name}님! 👋
-                    </span>
-                    <a href="pages/mypage.html">신청내역</a>
-                    <a href="pages/myinfo.html">내정보</a>
-                    <a href="#" onclick="logout()">로그아웃</a>
-                    <a href="pages/customer-service.html">고객센터</a>
-                `;
-            } else {
-                utilityMenu.innerHTML = `
-                    <a href="pages/login.html">로그인</a>
-                    <a href="pages/register.html">회원가입</a>
-                    <a href="pages/customer-service.html">고객센터</a>
-                `;
-            }
-        }
-        
-        // 히어로 섹션 버튼 업데이트
-        const heroButtons = document.querySelector('.hero-buttons');
-        if (heroButtons && currentUser) {
-            heroButtons.innerHTML = `
-                <a href="pages/mypage.html" class="btn-secondary">내 신청내역</a>
-                <a href="pages/application.html" class="btn-primary">조호물품 신청하기</a>
-            `;
-        }
-    }
-    
-    // 인기 조호물품 로드
-    async function loadPopularProducts() {
         try {
-            const result = await getProducts();
-            if (result.success && result.data.length > 0) {
-                displayPopularProducts(result.data.slice(0, 3)); // 상위 3개만 표시
+            const utilityMenu = document.querySelector('.utility-menu');
+            if (utilityMenu) {
+                if (window.currentUser && window.currentUser.name) {
+                    utilityMenu.innerHTML = 
+                        '<span style="color: #007bff; font-weight: bold;">' +
+                        '안녕하세요, ' + window.currentUser.name + '님! 👋' +
+                        '</span>' +
+                        '<a href="pages/mypage.html">신청내역</a>' +
+                        '<a href="pages/myinfo.html">내정보</a>' +
+                        '<a href="#" onclick="logout()">로그아웃</a>' +
+                        '<a href="pages/customer-service.html">고객센터</a>';
+                } else {
+                    utilityMenu.innerHTML = 
+                        '<a href="pages/login.html">로그인</a>' +
+                        '<a href="pages/register.html">회원가입</a>' +
+                        '<a href="pages/customer-service.html">고객센터</a>';
+                }
+            }
+            
+            // 히어로 섹션 버튼 업데이트
+            const heroButtons = document.querySelector('.hero-buttons');
+            if (heroButtons && window.currentUser) {
+                heroButtons.innerHTML = 
+                    '<a href="pages/mypage.html" class="btn-secondary">내 신청내역</a>' +
+                    '<a href="pages/application.html" class="btn-primary">조호물품 신청하기</a>';
             }
         } catch (error) {
-            console.log('인기 상품 로드 실패:', error);
-            // 에러가 나도 메인 페이지는 정상 동작
+            console.error('헤더 업데이트 에러:', error);
         }
     }
     
-    // 인기 조호물품 표시
-    function displayPopularProducts(products) {
-        // 기존 feature-card를 조호물품 정보로 업데이트
-        const featureCards = document.querySelectorAll('.feature-card');
-        
-        products.forEach((product, index) => {
-            if (featureCards[index]) {
-                featureCards[index].innerHTML = `
-                    <div class="feature-icon">📦</div>
-                    <h3>${product.name}</h3>
-                    <p>${product.description}</p>
-                    <div style="margin-top: 15px;">
-                        <span style="background: #e3f2fd; padding: 5px 10px; border-radius: 15px; font-size: 12px; color: #1976d2;">
-                            ${product.category}
-                        </span>
-                    </div>
-                `;
-            }
-        });
-    }
-    
     // 신청하기 버튼 클릭 시 로그인 확인
-    const applyButtons = document.querySelectorAll('a[href*="application.html"]');
-    applyButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!currentUser) {
-                e.preventDefault();
-                if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
-                    window.location.href = 'pages/login.html';
+    setTimeout(function() {
+        const applyButtons = document.querySelectorAll('a[href*="application.html"]');
+        applyButtons.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                if (!window.currentUser) {
+                    e.preventDefault();
+                    if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+                        window.location.href = 'pages/login.html';
+                    }
                 }
-            }
+            });
         });
-    });
+    }, 1000);
+    
+    console.log('메인 페이지 초기화 완료');
 });
 
 // 로그아웃 함수 전역 정의
 function logout() {
     if (confirm('로그아웃 하시겠습니까?')) {
-        localStorage.removeItem('currentUser');
-        location.reload(); // 페이지 새로고침
-    }
-}
-<script src="js/api.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // 사용자 정보 로드
-    loadUserFromStorage();
-    
-    // 헤더 업데이트
-    updateMainPageHeader();
-    
-    // 인기 조호물품 로드 - 이 부분 주석 처리
-    // loadPopularProducts();
-    
-    // 메인 페이지 헤더 업데이트
-    function updateMainPageHeader() {
-        const utilityMenu = document.querySelector('.utility-menu');
-        if (utilityMenu) {
-            if (currentUser) {
-                utilityMenu.innerHTML = `
-                    <span style="color: #007bff; font-weight: bold;">
-                        안녕하세요, ${currentUser.name}님! 👋
-                    </span>
-                    <a href="pages/mypage.html">신청내역</a>
-                    <a href="pages/myinfo.html">내정보</a>
-                    <a href="#" onclick="logout()">로그아웃</a>
-                    <a href="pages/customer-service.html">고객센터</a>
-                `;
-            } else {
-                utilityMenu.innerHTML = `
-                    <a href="pages/login.html">로그인</a>
-                    <a href="pages/register.html">회원가입</a>
-                    <a href="pages/customer-service.html">고객센터</a>
-                `;
-            }
+        if (typeof Storage !== "undefined") {
+            localStorage.removeItem('currentUser');
         }
-        
-        // 히어로 섹션 버튼 업데이트
-        const heroButtons = document.querySelector('.hero-buttons');
-        if (heroButtons && currentUser) {
-            heroButtons.innerHTML = `
-                <a href="pages/mypage.html" class="btn-secondary">내 신청내역</a>
-                <a href="pages/application.html" class="btn-primary">조호물품 신청하기</a>
-            `;
-        }
-    }
-    
-    // loadPopularProducts 함수와 displayPopularProducts 함수 삭제
-    
-    // 신청하기 버튼 클릭 시 로그인 확인
-    const applyButtons = document.querySelectorAll('a[href*="application.html"]');
-    applyButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!currentUser) {
-                e.preventDefault();
-                if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
-                    window.location.href = 'pages/login.html';
-                }
-            }
-        });
-    });
-});
-
-// 로그아웃 함수 전역 정의
-function logout() {
-    if (confirm('로그아웃 하시겠습니까?')) {
-        localStorage.removeItem('currentUser');
-        location.reload();
+        window.location.reload();
     }
 }
 </script>
