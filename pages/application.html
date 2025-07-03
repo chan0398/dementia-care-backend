@@ -232,88 +232,46 @@
 <script src="../js/api.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 인증 확인
-    if (!checkAuth()) return;
+    console.log('조호물품 페이지 로드됨');
     
-    let products = [];
-    
-    // 조호물품 목록 로드
-    async function loadProducts() {
-        try {
-            const result = await getProducts();
-            if (result.success) {
-                products = result.data;
-                displayProducts(products);
-            }
-        } catch (error) {
-            console.error('상품 로드 에러:', error);
-            showError('상품 목록을 불러오는데 실패했습니다.');
-        }
+    // 로그인 확인
+    if (!currentUser) {
+        alert('로그인이 필요합니다!');
+        window.location.href = 'login.html';
+        return;
     }
     
-    // 상품 목록 표시
-    function displayProducts(productList) {
-        const productGrid = document.querySelector('.product-grid');
-        if (!productGrid) return;
-        
-        productGrid.innerHTML = productList.map(product => `
-            <div class="product-item" data-category="${product.category}" data-id="${product.id}">
-                <img src="${product.image_url}" alt="${product.name}" 
-                     onerror="this.src='https://via.placeholder.com/200x200?text=${encodeURIComponent(product.name)}'">
-                <h3>${product.name}</h3>
-                <p>${product.description}</p>
-                <p class="product-limit">월 최대 ${product.max_quantity_per_month}개</p>
-                <button class="btn-apply" data-id="${product.id}">신청하기</button>
-            </div>
-        `).join('');
-        
-        // 신청 버튼 이벤트 추가
-        addApplyButtonEvents();
-    }
+    console.log('로그인된 사용자:', currentUser.name);
     
-    // 신청 버튼 이벤트 추가
-    function addApplyButtonEvents() {
-        const applyButtons = document.querySelectorAll('.btn-apply');
-        applyButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const productId = parseInt(this.dataset.id);
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                    openApplicationModal(product);
+    // 기존 정적 상품들에 이벤트 추가
+    const applyButtons = document.querySelectorAll('.btn-apply');
+    console.log('신청 버튼 개수:', applyButtons.length);
+    
+    applyButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // 기본 동작 방지
+            
+            const productId = this.dataset.id;
+            const productItem = this.closest('.product-item');
+            const productName = productItem.querySelector('h3').textContent;
+            const productDesc = productItem.querySelector('p').textContent;
+            
+            console.log('신청 버튼 클릭:', productName);
+            
+            // 간단한 신청 처리
+            const quantity = prompt(productName + ' 신청 수량을 입력하세요:', '1');
+            
+            if (quantity && quantity > 0) {
+                const address = prompt('배송 주소를 입력하세요:', '');
+                if (address) {
+                    // 실제 API 호출
+                    submitApplication(parseInt(productId), parseInt(quantity), address, '');
                 }
-            });
+            }
         });
-    }
+    });
     
-    // 신청 모달 열기
-    function openApplicationModal(product) {
-        // 간단한 프롬프트로 신청 정보 받기 (나중에 예쁜 모달로 교체 가능)
-        const quantity = prompt(`${product.name} 신청 수량을 입력하세요 (최대 ${product.max_quantity_per_month}개):`, '1');
-        
-        if (quantity === null) return; // 취소
-        
-        const quantityNum = parseInt(quantity);
-        if (isNaN(quantityNum) || quantityNum < 1 || quantityNum > product.max_quantity_per_month) {
-            showError(`수량은 1개 이상 ${product.max_quantity_per_month}개 이하로 입력해주세요.`);
-            return;
-        }
-        
-        const address = prompt('배송 주소를 입력해주세요:', currentUser.address || '');
-        
-        if (address === null) return; // 취소
-        
-        if (!address.trim()) {
-            showError('배송 주소를 입력해주세요.');
-            return;
-        }
-        
-        const note = prompt('요청사항을 입력하세요 (선택사항):', '') || '';
-        
-        // 신청 처리
-        submitApplication(product.id, quantityNum, address, note);
-    }
-    
-    // 신청 처리
+    // 신청 처리 함수
     async function submitApplication(productId, quantity, address, note) {
         try {
             const applicationData = {
@@ -321,44 +279,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 product_id: productId,
                 quantity: quantity,
                 delivery_address: address,
-                request_note: note
+                request_note: note || ''
             };
+            
+            console.log('신청 데이터:', applicationData);
             
             const result = await applyForProduct(applicationData);
             
             if (result.success) {
-                showSuccess(`${result.message}\n신청번호: ${result.application_id}`);
+                alert('신청이 완료되었습니다!\n신청번호: ' + result.application_id);
             } else {
                 throw new Error(result.error || '신청 처리에 실패했습니다.');
             }
             
         } catch (error) {
             console.error('신청 에러:', error);
-            showError(error.message);
+            alert('신청 중 오류가 발생했습니다: ' + error.message);
         }
     }
-    
-    // 카테고리 필터 기능
-    const categoryButtons = document.querySelectorAll('.category-filter button');
-    categoryButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // 활성 버튼 변경
-            categoryButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            const category = this.dataset.category;
-            
-            if (category === 'all') {
-                displayProducts(products);
-            } else {
-                const filteredProducts = products.filter(p => p.category === category);
-                displayProducts(filteredProducts);
-            }
-        });
-    });
-    
-    // 페이지 로드 시 상품 목록 로드
-    loadProducts();
 });
 </script>
 </body>
