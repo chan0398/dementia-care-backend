@@ -252,51 +252,12 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault(); // 기본 동작 방지
             
             const productId = this.dataset.id;
-            const productItem = this.closest('.product-item');
-            const productName = productItem.querySelector('h3').textContent;
-            const productDesc = productItem.querySelector('p').textContent;
+            console.log('상품 상세페이지로 이동:', productId);
             
-            console.log('신청 버튼 클릭:', productName);
-            
-            // 간단한 신청 처리
-            const quantity = prompt(productName + ' 신청 수량을 입력하세요:', '1');
-            
-            if (quantity && quantity > 0) {
-                const address = prompt('배송 주소를 입력하세요:', '');
-                if (address) {
-                    // 실제 API 호출
-                    submitApplication(parseInt(productId), parseInt(quantity), address, '');
-                }
-            }
+            // product-detail.html로 이동 (상품 ID 포함)
+            window.location.href = `product-detail.html?id=${productId}`;
         });
     });
-    
-    // 신청 처리 함수
-    async function submitApplication(productId, quantity, address, note) {
-        try {
-            const applicationData = {
-                user_id: currentUser.id,
-                product_id: productId,
-                quantity: quantity,
-                delivery_address: address,
-                request_note: note || ''
-            };
-            
-            console.log('신청 데이터:', applicationData);
-            
-            const result = await applyForProduct(applicationData);
-            
-            if (result.success) {
-                alert('신청이 완료되었습니다!\n신청번호: ' + result.application_id);
-            } else {
-                throw new Error(result.error || '신청 처리에 실패했습니다.');
-            }
-            
-        } catch (error) {
-            console.error('신청 에러:', error);
-            alert('신청 중 오류가 발생했습니다: ' + error.message);
-        }
-    }
 });
 </script>
 </body>

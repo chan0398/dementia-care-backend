@@ -583,9 +583,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const applyButtons = document.querySelectorAll('a[href*="application.html"]');
         applyButtons.forEach(function(button) {
             button.addEventListener('click', function(e) {
-                if (!window.currentUser) {
+                if (!currentUser) {
                     e.preventDefault();
-                    if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+                    alert('로그인이 필요한 서비스입니다.'); {
                         window.location.href = 'pages/login.html';
                     }
                 }
