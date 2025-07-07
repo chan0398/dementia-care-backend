@@ -92,12 +92,14 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
+            appearance: none;
             margin: 0;
         }
 
         /* Firefox에서 화살표 제거 */
         input[type="number"] {
             -moz-appearance: textfield;
+            appearance: textfield;
         }
     </style>
 </head>
@@ -159,7 +161,7 @@
                 <div class="product-container">
                     <!-- 1번 상품: 성인용 기저귀 -->
                     <div class="product-item" data-category="hygiene" data-id="1">
-                        <img src="../images/product1.jpg" alt="성인용 기저귀" onerror="this.src='https://via.placeholder.com/200x200?text=성인용기저귀'">
+                        <img src="../images/product1.jpg" alt="성인용 기저귀">
                         <h3>성인용 기저귀</h3>
                         <p>중형 (20매)</p>
                         <button class="btn-apply" data-id="1">신청하기</button>
@@ -167,7 +169,7 @@
                     
                     <!-- 2번 상품: 조호용 물티슈 -->
                     <div class="product-item" data-category="hygiene" data-id="2">
-                        <img src="../images/product2.jpg" alt="조호용 물티슈" onerror="this.src='https://via.placeholder.com/200x200?text=조호용물티슈'">
+                        <img src="../images/product2.jpg" alt="조호용 물티슈">
                         <h3>조호용 물티슈</h3>
                         <p>대형 (100매)</p>
                         <button class="btn-apply" data-id="2">신청하기</button>
@@ -175,7 +177,7 @@
                     
                     <!-- 3번 상품: 방수 매트 -->
                     <div class="product-item" data-category="daily" data-id="3">
-                        <img src="../images/product3.jpg" alt="방수 매트" onerror="this.src='https://via.placeholder.com/200x200?text=방수매트'">
+                        <img src="../images/product3.jpg" alt="방수 매트" >
                         <h3>방수 매트</h3>
                         <p>침대용 (17매)</p>
                         <button class="btn-apply" data-id="3">신청하기</button>
@@ -183,7 +185,7 @@
                     
                     <!-- 4번 상품: 목욕용품 세트 -->
                     <div class="product-item" data-category="hygiene" data-id="4">
-                        <img src="../images/product4.jpg" alt="목욕용품" onerror="this.src='https://via.placeholder.com/200x200?text=목욕용품'">
+                        <img src="../images/product4.jpg" alt="목욕용품">
                         <h3>목욕용품 세트</h3>
                         <p>종합 세트 (1박스)</p>
                         <button class="btn-apply" data-id="4">신청하기</button>
@@ -191,7 +193,7 @@
                     
                     <!-- 5번 상품: 항균 손소독제 -->
                     <div class="product-item" data-category="hygiene" data-id="5">
-                        <img src="../images/product5.jpg" alt="손소독제" onerror="this.src='https://via.placeholder.com/200x200?text=손소독제'">
+                        <img src="../images/product5.jpg" alt="손소독제">
                         <h3>항균 손소독제</h3>
                         <p>500ml (2개)</p>
                         <button class="btn-apply" data-id="5">신청하기</button>
@@ -199,7 +201,7 @@
                     
                     <!-- 6번 상품: 일회용 장갑 -->
                     <div class="product-item" data-category="safety" data-id="6">
-                        <img src="../images/product6.jpg" alt="일회용장갑" onerror="this.src='https://via.placeholder.com/200x200?text=일회용장갑'">
+                        <img src="../images/product6.jpg" alt="일회용장갑">
                         <h3>일회용 장갑</h3>
                         <p>100매 (1박스)</p>
                         <button class="btn-apply" data-id="6">신청하기</button>
@@ -243,20 +245,95 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('로그인된 사용자:', currentUser.name);
     
-    // 기존 정적 상품들에 이벤트 추가
+    // 모든 이벤트 리스너 제거 (기존 충돌 방지)
+    const allButtons = document.querySelectorAll('.btn-apply');
+    allButtons.forEach(button => {
+        // 기존 버튼을 복제하여 모든 이벤트 리스너 제거
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+    });
+    
+    // 새로운 버튼들에 이벤트 리스너 추가
     const applyButtons = document.querySelectorAll('.btn-apply');
     console.log('신청 버튼 개수:', applyButtons.length);
     
-    applyButtons.forEach(function(button) {
+    applyButtons.forEach(function(button, index) {
+        console.log(`버튼 ${index + 1}: data-id = ${button.getAttribute('data-id')}`);
+        
         button.addEventListener('click', function(e) {
             e.preventDefault(); // 기본 동작 방지
+            e.stopPropagation(); // 이벤트 버블링 방지
             
-            const productId = this.dataset.id;
-            console.log('상품 상세페이지로 이동:', productId);
+            // getAttribute 방식으로 통일
+            const productId = this.getAttribute('data-id');
+            console.log(`클릭된 버튼의 상품 ID: ${productId}`);
             
-            // product-detail.html로 이동 (상품 ID 포함)
-            window.location.href = `product-detail.html?id=${productId}`;
+            // 상품 ID 검증
+            if (!productId) {
+                console.error('상품 ID를 찾을 수 없습니다.');
+                alert('상품 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 각 상품별 상세페이지로 이동
+            const targetUrl = `product-detail.html?id=${productId}`;
+            console.log(`이동할 URL: ${targetUrl}`);
+            
+            // 실제 페이지 이동
+            window.location.href = targetUrl;
         });
+    });
+    
+    // 카테고리 필터링 기능
+    const categoryLinks = document.querySelectorAll('.category-sidebar a');
+    const productItems = document.querySelectorAll('.product-item');
+    
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 모든 링크에서 active 클래스 제거
+            categoryLinks.forEach(item => item.classList.remove('active'));
+            
+            // 클릭한 링크에 active 클래스 추가
+            this.classList.add('active');
+            
+            // 카테고리 필터링
+            const category = this.getAttribute('data-category');
+            
+            productItems.forEach(item => {
+                if (category === 'all' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // 상품 카드 클릭 이벤트 (신청하기 버튼과 분리)
+    productItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // 신청하기 버튼을 클릭한 경우는 제외
+            if (e.target.classList.contains('btn-apply') || e.target.closest('.btn-apply')) {
+                console.log('버튼 클릭 감지 - 카드 클릭 이벤트 무시');
+                return;
+            }
+            
+            const productId = this.getAttribute('data-id');
+            if (productId) {
+                console.log('상품 카드 클릭 - 상품 ID:', productId);
+                window.location.href = `product-detail.html?id=${productId}`;
+            }
+        });
+    });
+    
+    // 디버깅용 - 모든 상품 정보 출력
+    console.log('=== 상품 버튼 정보 ===');
+    applyButtons.forEach((button, index) => {
+        const productId = button.getAttribute('data-id');
+        const productName = button.closest('.product-item')?.querySelector('h3')?.textContent || '이름 없음';
+        console.log(`버튼 ${index + 1}: ID=${productId}, 상품명=${productName}`);
     });
 });
 </script>
