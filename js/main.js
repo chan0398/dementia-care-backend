@@ -61,10 +61,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // 신청하기 버튼 이벤트 (홈페이지에서)
     const setupApplyButtons = () => {
         const applyButtons = document.querySelectorAll('.btn-apply');
-        
+    
         applyButtons.forEach(button => {
+            // 현재 페이지가 application.html인지 확인
+            const currentPage = window.location.pathname;
+        
+            if (currentPage.includes('application.html')) {
+                // application.html 페이지에서는 이벤트 리스너를 추가하지 않음
+                // (인라인 스크립트에서 처리하도록 함)
+                console.log('application.html 페이지 - main.js에서 이벤트 처리 안함');
+                return;
+            }
+        
+            // 다른 페이지(index.html 등)에서만 application.html로 이동
             button.addEventListener('click', function() {
-                // 신청 페이지로 이동
+                console.log('main.js - application.html로 이동');
                 window.location.href = 'pages/application.html';
             });
         });
@@ -105,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const isInPagesDirectory = window.location.pathname.includes('/pages/');
             // index.html 또는 루트 경로인지 확인
             const isHomePage = window.location.pathname === '/' || 
-                              window.location.pathname.endsWith('index.html');
+                        window.location.pathname.endsWith('index.html');
             
             // 페이지 위치에 따라 검색 결과 페이지 경로 반환
             if (isHomePage) {

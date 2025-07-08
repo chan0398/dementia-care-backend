@@ -230,13 +230,47 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (thumbnailImg) {
                         thumbnailImg.src = product.thumbnails[index];
                         thumbnailImg.alt = `${product.name} 썸네일 ${index + 1}`;
+                
+                        // 개선된 오류 처리 - 이모티콘과 함께 예쁜 플레이스홀더
                         thumbnailImg.onerror = function() {
-                            this.src = `https://via.placeholder.com/100x100?text=썸네일${index + 1}`;
+                            // SVG 기반 플레이스홀더 생성
+                            const placeholderSvg = createThumbnailPlaceholder(index + 1);
+                            this.src = placeholderSvg;
+                            this.style.backgroundColor = '#f8f9fa';
+                            this.style.border = '2px dashed #dee2e6';
+                            this.style.borderRadius = '8px';
                         };
                     }
                     thumbnail.setAttribute('data-src', product.thumbnails[index]);
+                } else {
+                    // 데이터에 없는 썸네일은 숨기기
+                    thumbnail.style.display = 'none';
                 }
             });
+        }
+
+        // 썸네일 플레이스홀더 생성 함수
+        function createThumbnailPlaceholder(number) {
+            const emojis = ['📷', '🖼️', '📸', '🎨', '🖥️', '💻'];
+            const colors = ['#e3f2fd', '#f3e5f5', '#e8f5e8', '#fff3e0', '#fce4ec', '#f1f8e9'];
+    
+            const emoji = emojis[(number - 1) % emojis.length];
+            const bgColor = colors[(number - 1) % colors.length];
+    
+            const svg = `
+                <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" fill="${bgColor}" rx="8"/>
+                    <text x="50" y="40" font-size="24" text-anchor="middle" dy=".3em">${emoji}</text>
+                    <text x="50" y="65" font-size="10" text-anchor="middle" fill="#6c757d" font-family="system-ui">
+                        이미지 없음
+                    </text>
+                    <text x="50" y="78" font-size="8" text-anchor="middle" fill="#adb5bd" font-family="system-ui">
+                        #${number}
+                    </text>
+                </svg>
+            `;
+    
+            return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
         }
         
         // 상세 설명 및 규격 정보 업데이트

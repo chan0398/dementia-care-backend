@@ -230,7 +230,6 @@
     </div>
 
 <!-- 기존 스크립트 교체 -->
-<script src="../js/main.js"></script>
 <script src="../js/api.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -245,41 +244,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('로그인된 사용자:', currentUser.name);
     
-    // 모든 이벤트 리스너 제거 (기존 충돌 방지)
-    const allButtons = document.querySelectorAll('.btn-apply');
-    allButtons.forEach(button => {
-        // 기존 버튼을 복제하여 모든 이벤트 리스너 제거
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
-    });
-    
-    // 새로운 버튼들에 이벤트 리스너 추가
+    // 신청하기 버튼에 이벤트 리스너 추가
     const applyButtons = document.querySelectorAll('.btn-apply');
     console.log('신청 버튼 개수:', applyButtons.length);
     
     applyButtons.forEach(function(button, index) {
-        console.log(`버튼 ${index + 1}: data-id = ${button.getAttribute('data-id')}`);
+        const productId = button.getAttribute('data-id');
+        console.log(`버튼 ${index + 1}: data-id = ${productId}`);
         
         button.addEventListener('click', function(e) {
-            e.preventDefault(); // 기본 동작 방지
-            e.stopPropagation(); // 이벤트 버블링 방지
+            e.preventDefault();
+            e.stopPropagation();
             
-            // getAttribute 방식으로 통일
             const productId = this.getAttribute('data-id');
             console.log(`클릭된 버튼의 상품 ID: ${productId}`);
             
-            // 상품 ID 검증
             if (!productId) {
                 console.error('상품 ID를 찾을 수 없습니다.');
                 alert('상품 정보를 찾을 수 없습니다.');
                 return;
             }
             
-            // 각 상품별 상세페이지로 이동
             const targetUrl = `product-detail.html?id=${productId}`;
             console.log(`이동할 URL: ${targetUrl}`);
-            
-            // 실제 페이지 이동
             window.location.href = targetUrl;
         });
     });
@@ -292,13 +279,9 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // 모든 링크에서 active 클래스 제거
             categoryLinks.forEach(item => item.classList.remove('active'));
-            
-            // 클릭한 링크에 active 클래스 추가
             this.classList.add('active');
             
-            // 카테고리 필터링
             const category = this.getAttribute('data-category');
             
             productItems.forEach(item => {
@@ -311,25 +294,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 상품 카드 클릭 이벤트 (신청하기 버튼과 분리)
+    // 상품 카드 클릭 이벤트
     productItems.forEach(item => {
         item.addEventListener('click', function(e) {
-            // 신청하기 버튼을 클릭한 경우는 제외
             if (e.target.classList.contains('btn-apply') || e.target.closest('.btn-apply')) {
-                console.log('버튼 클릭 감지 - 카드 클릭 이벤트 무시');
                 return;
             }
             
             const productId = this.getAttribute('data-id');
             if (productId) {
-                console.log('상품 카드 클릭 - 상품 ID:', productId);
                 window.location.href = `product-detail.html?id=${productId}`;
             }
         });
     });
     
-    // 디버깅용 - 모든 상품 정보 출력
-    console.log('=== 상품 버튼 정보 ===');
+    console.log('=== 디버깅 정보 ===');
     applyButtons.forEach((button, index) => {
         const productId = button.getAttribute('data-id');
         const productName = button.closest('.product-item')?.querySelector('h3')?.textContent || '이름 없음';

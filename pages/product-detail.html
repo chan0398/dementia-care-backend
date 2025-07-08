@@ -45,29 +45,92 @@
         
         .product-thumbnails {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
         }
         
         .thumbnail {
-            width: 70px;
-            height: 70px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
+            width: 80px;
+            height: 80px;
+            border: 2px solid transparent;
+            border-radius: 8px;
             overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            position: relative;
         }
         
         .thumbnail.active {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 1px var(--primary-color);
         }
         
         .thumbnail img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
         }
-        
+
+        .thumbnail:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 플레이스홀더 이미지 스타일 */
+        .thumbnail img[src*="data:image/svg"] {
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        /* 로딩 상태 스타일 */
+        .thumbnail.loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* 썸네일 번호 표시 (옵션) */
+        .thumbnail::before {
+            content: attr(data-index);
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .thumbnail:hover::before {
+            opacity: 1;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .thumbnail {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .product-thumbnails {
+                gap: 6px;
+            }
+        }
+
         .product-info-container {
             flex: 1;
             min-width: 300px;
@@ -645,16 +708,19 @@
                                 <img src="../images/product1.jpg" alt="상품 이미지" id="mainProductImage" onerror="this.src='https://via.placeholder.com/400x400?text=상품이미지'">
                             </div>
                             <div class="product-thumbnails">
-                                <div class="thumbnail active" data-src="../images/product1.jpg" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일1'">
-                                    <img src="../images/product1.jpg" alt="썸네일 1" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일1'">
-                                </div>
-                                <div class="thumbnail" data-src="../images/product1_2.jpg" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일2'">
-                                    <img src="../images/product1_2.jpg" alt="썸네일 2" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일2'">
-                                </div>
-                                <div class="thumbnail" data-src="../images/product1_3.jpg" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일3'">
-                                    <img src="../images/product1_3.jpg" alt="썸네일 3" onerror="this.src='https://via.placeholder.com/100x100?text=썸네일3'">
-                                </div>
+                            <div class="thumbnail active" data-src="../images/product1.jpg">
+                                <img src="../images/product1.jpg" alt="상품 이미지 1" 
+                                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZjhmOWZhIiBzdHJva2U9IiNkZWUyZTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNSw1IiByeD0iOCIvPgogICAgPHRleHQgeD0iNTAiIHk9IjQ1IiBmb250LXNpemU9IjIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn5K3PC90ZXh0PgogICAgPHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2Yzc1N2QiPuydtOuvuOyngCDsl4bsnYw8L3RleHQ+Cjwvc3ZnPgo='; this.style.objectFit='contain';">
                             </div>
+                            <div class="thumbnail" data-src="../images/product1_2.jpg">
+                                <img src="../images/product1_2.jpg" alt="상품 이미지 2" 
+                                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZjNlNWY1IiBzdHJva2U9IiNkZWUyZTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNSw1IiByeD0iOCIvPgogICAgPHRleHQgeD0iNTAiIHk9IjQ1IiBmb250LXNpemU9IjIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn5aM77iPPC90ZXh0PgogICAgPHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2Yzc1N2QiPuydtOuvuOyngCDsl4bsnYw8L3RleHQ+Cjwvc3ZnPgo='; this.style.objectFit='contain';">
+                            </div>
+                            <div class="thumbnail" data-src="../images/product1_3.jpg">
+                                <img src="../images/product1_3.jpg" alt="상품 이미지 3" 
+                                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZThmNWU4IiBzdHJva2U9IiNkZWUyZTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNSw1IiByeD0iOCIvPgogICAgPHRleHQgeD0iNTAiIHk9IjQ1IiBmb250LXNpemU9IjIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn5K4PC90ZXh0PgogICAgPHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2Yzc1N2QiPuydtOuvuOyngCDsl4bsnYw8L3RleHQ+Cjwvc3ZnPgo='; this.style.objectFit='contain';">
+                            </div>
+                        </div>
                         </div>
                         <div class="product-info-container">
                             <h1 class="product-title">성인용 기저귀</h1>
@@ -733,7 +799,6 @@
                                 <h3>상세정보</h3>
                                 <div class="detail-content">
                                     <img src="../images/product1_detail.jpg" alt="상품 상세" id="detail-image" onerror="this.src='https://via.placeholder.com/800x600?text=상세정보'">
-                                    <div class="detail-text">
                                         <h4>제품 특징</h4>
                                         <ul id="detail-features">
                                             <li>빠른 흡수력: 특수 흡수층이 빠르게 수분을 흡수하여 피부를 건조하게 유지합니다.</li>
@@ -987,6 +1052,25 @@
 
     <script src="../js/main.js"></script>
     <script>
+        // 썸네일 플레이스홀더 생성 함수 
+        function createThumbnailPlaceholder(number) {
+            const emojis = ['📷', '🖼️', '📸', '🎨', '🖥️', '💻'];
+            const colors = ['#f8f9fa', '#f3e5f5', '#e8f5e8', '#fff3e0', '#fce4ec', '#f1f8e9'];
+    
+            const emoji = emojis[(number - 1) % emojis.length];
+            const bgColor = colors[(number - 1) % colors.length];
+    
+            const svg = `
+                <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" fill="${bgColor}" stroke="#dee2e6" stroke-width="2" stroke-dasharray="5,5" rx="8"/>
+                    <text x="50" y="45" font-size="20" text-anchor="middle">${emoji}</text>
+                    <text x="50" y="65" font-size="9" text-anchor="middle" fill="#6c757d">이미지 없음</text>
+                </svg>
+            `;
+    
+            return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
+        }
+
         // 상품 상세 페이지 확장 기능
         document.addEventListener('DOMContentLoaded', function() {
             console.log('상품 상세 페이지 확장 스크립트 로딩됨');
@@ -1288,13 +1372,13 @@
                     });
                 }
                 
-	   // 장바구니 확인 버튼 - 수정된 부분
-	   if (btnViewCart) {
- 	      btnViewCart.addEventListener('click', function() {
+	        // 장바구니 확인 버튼 - 수정된 부분
+	        if (btnViewCart) {
+ 	           btnViewCart.addEventListener('click', function() {
   	         // 장바구니 페이지로 이동
- 	          window.location.href = 'cart.html';
-   	       });
-   	   }
+ 	           window.location.href = 'cart.html';
+   	         });
+   	     }
                 
                 // 모달 닫기 버튼
                 if (closeBtn) {
